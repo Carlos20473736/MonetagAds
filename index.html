@@ -47,34 +47,16 @@
     </div>
 
     <!-- Script para carregar o anúncio de recompensa -->
-    <script src='//niphaumeenses.net/vignette.min.js' data-zone='8613811' data-sdk='show_8613811'></script>
+    <script src='//niphaumeenses.net/vignette.min.js' data-zone='8442219' data-sdk='show_8442219'></script>
 
     <script>
-        // Função para carregar e mostrar o anúncio
-        function loadAd() {
-            // Exibir a mensagem de carregamento
-            document.getElementById('reward-ad').style.display = 'block';
-
-            // Mostrar o anúncio através do script da Monetag
-            window.show_8613811();  // Chama a função da Monetag para exibir o anúncio
-        }
-
         // Auto abrir o anúncio assim que a página carregar
         window.onload = function() {
-            loadAd();  // Carregar o anúncio ao carregar a página
-
-            // Configurar um tempo limite para recarregar a página após o término do anúncio
-            setTimeout(() => {
-                location.reload(); // Recarrega a página
-            }, 15000); // Ajuste o tempo (em milissegundos) conforme a duração do anúncio
+            // Exibir a mensagem de carregamento
+            document.getElementById('reward-ad').style.display = 'block';
+            // Mostrar o anúncio através do script da Monetag
+            window.show_8442219();  // Chama a função da Monetag para exibir o anúncio
         };
-
-        // Detecção quando a aba se torna visível novamente
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                loadAd(); // Carregar o anúncio quando a aba for visível novamente
-            }
-        });
     </script>
 </body>
 </html>
