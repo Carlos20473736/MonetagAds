@@ -3,46 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monetag (Auto Bot)</title>
+    <title>MiniApp de Recompensas</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
             background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
         }
         h1 {
-            color: #FF0000; /* Vermelho */
-            font-size: 3rem;
-            margin-top: 50px;
-            text-align: center;
-            -webkit-text-stroke: 1px black; /* Borda preta nas letras */
-            text-stroke: 1px black; /* Borda preta nas letras (funciona no Chrome e Safari) */
+            color: #333;
         }
         .content {
+            margin-top: 30px;
             padding: 20px;
-            background-color: #333; /* Fundo cinza escuro */
-            border-radius: 10px;
-            max-width: 500px;
-            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        #reward-ad {
-            margin-top: 20px;
-            color: #FF0000;
-            font-size: 1.2rem;
+        button {
+            background-color: #28a745;
+            color: white;
+            font-size: 18px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
+    <h1>Ganhe Recompensas!</h1>
     <div class="content">
-        <h1>Monetag (Auto)</h1>
-        <div id="reward-ad">
-            <p>O anúncio está sendo carregado...</p>
+        <p>Para ganhar recompensas, clique no botão abaixo e assista ao vídeo!</p>
+        <button id="watchButton">Assistir ao vídeo</button>
+        <div id="reward-ad" style="margin-top: 20px; display: none;">
+            <!-- O anúncio da Monetag será carregado aqui -->
         </div>
     </div>
 
@@ -50,13 +49,13 @@
     <script src='//niphaumeenses.net/vignette.min.js' data-zone='8647630' data-sdk='show_8647630'></script>
 
     <script>
-        // Auto abrir o anúncio assim que a página carregar
-        window.onload = function() {
-            // Exibir a mensagem de carregamento
+        // Quando o botão for clicado, mostrar o anúncio Monetag
+        document.getElementById('watchButton').addEventListener('click', function() {
+            // Exibir a área do anúncio da Monetag
             document.getElementById('reward-ad').style.display = 'block';
             // Mostrar o anúncio através do script da Monetag
             window.show_8647630();  // Chama a função da Monetag para exibir o anúncio
-        };
+        });
     </script>
 </body>
 </html>
