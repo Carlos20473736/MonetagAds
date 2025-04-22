@@ -1,56 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mini App Telegram com AdsGram</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini1 App com AdsGram</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f2f2f2;
-      padding: 30px;
-    }
-    button {
-      padding: 15px 25px;
-      font-size: 16px;
-      background-color: #34b7f1;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #1995d4;
-    }
-  </style>
 </head>
 <body>
+  <h2>🎁 Ganhe Recompensa!</h2>
+  <button id="ad">🎬 Assistir ao Anúncio</button>
 
-  <h2>🎁 Ganhe Recompensas!</h2>
-  <p>Assista a um anúncio e receba uma recompensa.</p>
-
-  <button id="watchAdBtn">🎬 Assistir ao Anúncio</button>
-
-  <p id="rewardMessage" style="margin-top: 20px; font-weight: bold;"></p>
+  <p id="mensagem" style="font-weight: bold; margin-top: 20px;"></p>
 
   <script>
-    const blockId = '4c01b6d7572b490c835eaa998f69e1aa'; // Seu blockId do AdsGram
+    // Substitua pelo seu blockId real
+    const AdController = window.Adsgram.init({ blockId: "4c01b6d7572b490c835eaa998f69e1aa" });
 
-    document.getElementById('watchAdBtn').addEventListener('click', () => {
-      sad(blockId, 'show')
-        .then(() => {
-          document.getElementById('rewardMessage').innerText = '✅ Você assistiu ao anúncio e ganhou a recompensa!';
-          // Aqui você pode integrar com backend, atualizar moedas, XP etc.
+    const button = document.getElementById('ad');
+    const mensagem = document.getElementById('mensagem');
+
+    button.addEventListener('click', () => {
+      AdController.show()
+        .then((result) => {
+          console.log("Ad finalizado com sucesso:", result);
+          mensagem.innerText = "✅ Recompensa concedida!";
         })
         .catch((err) => {
-          console.error('Erro ao exibir o anúncio:', err);
-          document.getElementById('rewardMessage').innerText = '⚠️ O anúncio não pôde ser exibido.';
+          console.error("Erro ao exibir anúncio:", err);
+          mensagem.innerText = "⚠️ Não foi possível exibir o anúncio.";
         });
     });
   </script>
-
 </body>
 </html>
