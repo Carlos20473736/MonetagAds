@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Anúncio Adcash</title>
-
-    <!-- Etapa 1: Incluir biblioteca Adcash -->
-    <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 60px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini App Telegram com AdsGram</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f2f2f2;
+      padding: 30px;
+    }
+    button {
+      padding: 15px 25px;
+      font-size: 16px;
+      background-color: #34b7f1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1995d4;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Bem-vindo</h1>
-    <p>O anúncio Adcash será carregado automaticamente.</p>
+  <h2>🎁 Ganhe Recompensas!</h2>
+  <p>Assista a um anúncio e receba uma recompensa.</p>
 
-    <!-- Etapa 2: Script da tag -->
-    <script type="text/javascript">
-        aclib.runAutoTag({
-            zoneId: 'temvlqstjt',
+  <button id="watchAdBtn">🎬 Assistir ao Anúncio</button>
+
+  <p id="rewardMessage" style="margin-top: 20px; font-weight: bold;"></p>
+
+  <script>
+    const blockId = '4c01b6d7572b490c835eaa998f69e1aa'; // Seu blockId do AdsGram
+
+    document.getElementById('watchAdBtn').addEventListener('click', () => {
+      sad(blockId, 'show')
+        .then(() => {
+          document.getElementById('rewardMessage').innerText = '✅ Você assistiu ao anúncio e ganhou a recompensa!';
+          // Aqui você pode integrar com backend, atualizar moedas, XP etc.
+        })
+        .catch((err) => {
+          console.error('Erro ao exibir o anúncio:', err);
+          document.getElementById('rewardMessage').innerText = '⚠️ O anúncio não pôde ser exibido.';
         });
-    </script>
+    });
+  </script>
 
 </body>
 </html>
