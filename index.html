@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mini1 App com AdsGram</title>
+  <title>Mini App com AdsGram</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 </head>
@@ -14,8 +14,8 @@
   <p id="mensagem" style="font-weight: bold; margin-top: 20px;"></p>
 
   <script>
-    // Substitua pelo seu blockId real
-    const AdController = window.Adsgram.init({ blockId: "4c01b6d7572b490c835eaa998f69e1aa" });
+    // blockId numérico correto
+    const AdController = window.Adsgram.init({ blockId: "10139" });
 
     const button = document.getElementById('ad');
     const mensagem = document.getElementById('mensagem');
@@ -23,12 +23,12 @@
     button.addEventListener('click', () => {
       AdController.show()
         .then((result) => {
-          console.log("Ad finalizado com sucesso:", result);
-          mensagem.innerText = "✅ Recompensa concedida!";
+          console.log("Ad finalizado:", result);
+          mensagem.innerText = "✅ Você ganhou a recompensa!";
         })
         .catch((err) => {
           console.error("Erro ao exibir anúncio:", err);
-          mensagem.innerText = "⚠️ Não foi possível exibir o anúncio.";
+          mensagem.innerText = "⚠️ Não foi possível carregar o anúncio.";
         });
     });
   </script>
