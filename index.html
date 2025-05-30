@@ -1,25 +1,124 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rede de Anúncios - Adsgram</title>
-    <!-- Carregando o script Adsgram -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <title>Mini App Telegram + Monetag Ads</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center 
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        #telegram-mini-app {
+            width: 100%;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #0088cc;
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #006699;
+            transform: scale(1.05);
+        }
+
+        .footer {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
 </head>
+
 <body>
 
-    <h1>Ganhe Recompensas Visualizando Anúncios</h1>
-    <p>Visualize o anúncio abaixo para ganhar recompensas:</p>
+    <div class="container">
+        <h2>Mini App Telegram + Monetag Ads</h2>
 
-    <!-- Bloco de anúncio em formato task -->
-    <adsgram-task
-        data-block-id="task-10140"  <!-- Substitua pelo seu blockId real -->
-        data-debug="true"              <!-- Ativa o modo de depuração (opcional) -->
-        class="task"                   <!-- Classe para estilização -->
-    ></adsgram-task>
+        <div id="telegram-mini-app">
+            <iframe src="https://t.me/your_mini_app_bot/your"></iframe>
+        </div>
 
-    <p>Ao finalizar a tarefa, você poderá ser recompensado!</p>
+        <button class="btn" onclick="showAd()">Mostrar Anúncio</button>
+
+        <div class="footer">Powered by Telegram & Monetag</div>
+    </div>
+
+    <!-- Monetag SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='9390915' data-sdk='show_9390915'></script>
+
+    <script>
+        function showAd() {
+            show_9390915().then(() => {
+                alert('Você viu um anúncio e ganhou a recompensa!');
+                // Aqui você pode adicionar a lógica de recompensa do usuário.
+            }).catch((err) => {
+                console.error('Erro ao exibir anúncio:', err);
+            });
+        }
+
+        // Automatically trigger ad on page load
+        window.onload = function() {
+            showAd();
+        };
+    </script>
 
 </body>
+
 </html>
