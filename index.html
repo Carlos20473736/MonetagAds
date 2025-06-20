@@ -3,163 +3,877 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monetag (Auto)</title>
+    <title>Monetag Pro - Sistema de Recompensas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
         }
 
         .container {
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px 20px;
-            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 480px;
             width: 100%;
+            overflow: hidden;
+            position: relative;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 32px 32px 24px;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            transition: transform 0.3s ease;
+            position: relative;
         }
 
-        .container:hover {
-            transform: translateY(-5px);
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
         }
 
-        h1 {
-            color: #FF0000;
-            font-size: 2.5rem;
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        /* Estilos para a tela de login */
+        .login-screen {
+            display: block;
+        }
+
+        .login-title {
+            font-size: 24px;
             font-weight: 600;
-            -webkit-text-stroke: 1px black;
-            text-stroke: 1px black;
+            color: #2d3748;
+            margin-bottom: 8px;
+            text-align: center;
         }
 
-        #reward-ad {
-            margin-top: 20px;
-            color: #333;
-            font-size: 1.2rem;
-            font-weight: 500;
+        .login-description {
+            color: #718096;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 1.5;
         }
 
-        #countdown {
-            color: #0088cc;
-            font-size: 1rem;
-            font-weight: 500;
+        .form-group {
+            margin-bottom: 24px;
         }
 
-        .btn {
-            display: inline-block;
-            background: #0088cc;
-            color: #fff;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1rem;
+        .form-label {
+            display: block;
+            font-size: 14px;
             font-weight: 500;
-            text-decoration: none;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 400;
+            color: #2d3748;
+            background: #f7fafc;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #a0aec0;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn:hover {
-            background: #006699;
-            transform: scale(1.05);
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
-        .footer {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 10px;
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .message {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        .loading {
+            background: #fef5e7;
+            color: #d69e2e;
+            border: 1px solid #f6e05e;
+        }
+
+        .instructions {
+            background: #edf2f7;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .instructions h4 {
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .instructions h4::before {
+            content: '💡';
+            margin-right: 8px;
+        }
+
+        .instructions p {
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .instructions .note {
+            color: #d69e2e;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        /* Ocultar a tela principal inicialmente */
+        .main-content {
+            display: none;
+        }
+
+        /* Estilos para a tela principal */
+        .user-info {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .user-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .user-name {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-id {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c53030;
+            transform: translateY(-1px);
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .ad-container {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            border: 2px dashed #cbd5e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ad-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .ad-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .ad-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .ad-text {
+            color: #4a5568;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .timer {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        .reward-message {
+            background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+            color: #2f855a;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid #68d391;
+        }
+
+        .reward-message::before {
+            content: '🎉';
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                border-radius: 16px;
+            }
+
+            .header {
+                padding: 24px 24px 20px;
+            }
+
+            .content {
+                padding: 24px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .main-title {
+                font-size: 28px;
+            }
+
+            .user-details {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Animações de entrada */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Monetag (Auto)</h1>
-        <div id="reward-ad">
-            <p>O anúncio está sendo carregado...</p>
+    <!-- Tela de Login -->
+    <div id="login-screen" class="container login-screen">
+        <div class="header">
+            <div class="logo">Monetag Pro</div>
+            <div class="subtitle">Sistema de Recompensas Inteligente</div>
         </div>
-        <div id="countdown">Atualizando em 18 segundos...</div>
-        <button class="btn" onclick="showAd()">Mostrar Anúncio</button>
-        <div class="footer">Powered by Monetag</div>
+        
+        <div class="content">
+            <h2 class="login-title">Bem-vindo de volta!</h2>
+            <p class="login-description">
+                Digite seu token de acesso para conectar sua conta do Telegram e começar a ganhar recompensas.
+            </p>
+            
+            <div class="form-group">
+                <label class="form-label" for="token-input">Token de Acesso</label>
+                <input 
+                    type="text" 
+                    id="token-input" 
+                    class="form-input"
+                    placeholder="Cole seu token aqui..."
+                    maxlength="50"
+                >
+            </div>
+            
+            <button id="login-btn" class="btn-primary" onclick="authenticateUser()">
+                Conectar Conta
+            </button>
+            
+            <div id="login-message"></div>
+
+            <div class="instructions">
+                <h4>Como obter seu token</h4>
+                <p>• Os tokens são gerenciados de forma segura no Firebase</p>
+                <p>• Cada token está vinculado exclusivamente à sua conta do Telegram</p>
+                <p>• Mantenha seu token em segurança e não o compartilhe</p>
+                <p class="note">Nota: Todos os tokens são validados em tempo real no servidor</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Monetag SDK -->
-    <script src='//libtl.com/sdk.js' data-zone='9390915' data-sdk='show_9390915' async></script>
+    <!-- Conteúdo Principal (Anúncios) -->
+    <div id="main-content" class="container main-content">
+        <div class="header">
+            <div class="logo">Monetag Pro</div>
+            <div class="subtitle">Ganhe recompensas assistindo anúncios</div>
+        </div>
+        
+        <div class="content">
+            <div class="user-info">
+                <div class="user-details">
+                    <div>
+                        <div class="user-name" id="current-username">Carregando...</div>
+                        <div class="user-id">ID: <span id="current-telegram-id">---</span></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Sair</button>
+                </div>
+            </div>
+            
+            <h1 class="main-title">Centro de Recompensas</h1>
+            
+            <div class="ad-container">
+                <div class="ad-content">
+                    <div id="reward-ad">
+                        <span class="ad-icon">📺</span>
+                        <div class="ad-text">Preparando seu anúncio...</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para carregar o anúncio de recompensa -->
+    <script src='//niphaumeenses.net/vignette.min.js' data-zone='9196656' data-sdk='show_9196656'></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
 
     <script>
-        function showAd() {
-            document.getElementById('reward-ad').innerHTML = '<p>O anúncio está sendo carregado...</p>';
-            // Reset countdown
-            startCountdown(18);
-            // Check if show_9390915 is defined
-            if (typeof show_9390915 === 'function') {
-                show_9390915().then(() => {
-                    document.getElementById('reward-ad').innerHTML = '<p>Anúncio exibido com sucesso!</p>';
-                    startAdTimer();
-                }).catch((err) => {
-                    document.getElementById('reward-ad').innerHTML = '<p>Erro ao carregar o anúncio. Atualizando em breve...</p>';
-                    console.error('Erro ao exibir anúncio:', err);
-                    startAdTimer(); // Proceed to refresh even if ad fails
-                });
-            } else {
-                document.getElementById('reward-ad').innerHTML = '<p>Erro: SDK do Monetag não carregado. Atualizando em breve...</p>';
-                console.error('Erro: show_9390915 não está definido. Verifique o carregamento do SDK.');
-                startAdTimer(); // Proceed to refresh even if SDK fails
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyD3ThbSkM-w5W1QCfLag8y-iqsN0bM2YdA",
+          authDomain: "injector-78dd6.firebaseapp.com",
+          projectId: "injector-78dd6",
+          storageBucket: "injector-78dd6.appspot.com",
+          databaseURL: "https://injector-78dd6-default-rtdb.firebaseio.com"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Função para verificar se o usuário já está autenticado
+        function checkAuthentication() {
+            const authToken = localStorage.getItem('authToken');
+            const telegramId = localStorage.getItem('telegramId');
+            const username = localStorage.getItem('username');
+            
+            if (authToken && telegramId && username) {
+                // Verificar se o token ainda é válido no Firebase
+                validateTokenInFirebase(authToken)
+                    .then(isValid => {
+                        if (isValid) {
+                            // Token ainda é válido, mostrar conteúdo principal
+                            showMainContent();
+                        } else {
+                            // Token não é mais válido, limpar dados
+                            clearAuthData();
+                            showLoginScreen();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao verificar token:', error);
+                        // Em caso de erro, limpar dados e mostrar login
+                        clearAuthData();
+                        showLoginScreen();
+                    });
+                return true;
+            }
+            return false;
+        }
+
+        // Função para validar token no Firebase
+        async function validateTokenInFirebase(token) {
+            try {
+                const snapshot = await database.ref('tokens/' + token).once('value');
+                return snapshot.exists();
+            } catch (error) {
+                console.error('Erro ao consultar Firebase:', error);
+                return false;
             }
         }
 
-        function startAdTimer() {
-            setTimeout(function() {
-                location.reload();
-            }, 18000); // 18000 ms = 18 seconds
+        // Função para obter dados do usuário do Firebase
+        async function getUserDataFromFirebase(token) {
+            try {
+                const snapshot = await database.ref('tokens/' + token).once('value');
+                if (snapshot.exists()) {
+                    return snapshot.val();
+                }
+                return null;
+            } catch (error) {
+                console.error('Erro ao obter dados do usuário:', error);
+                return null;
+            }
         }
 
-        function startCountdown(seconds) {
-            let counter = seconds;
-            const countdownElement = document.getElementById('countdown');
-            countdownElement.innerHTML = `Atualizando em ${counter} segundos...`;
-            const interval = setInterval(() => {
-                counter--;
-                if (counter <= 0) {
-                    clearInterval(interval);
-                    countdownElement.innerHTML = 'Atualizando...';
+        // Função para limpar dados de autenticação
+        function clearAuthData() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('telegramId');
+            localStorage.removeItem('username');
+            localStorage.removeItem('firstName');
+            localStorage.removeItem('lastName');
+        }
+
+        // Função para mostrar tela de login
+        function showLoginScreen() {
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+        }
+
+        // Função para autenticar o usuário
+        async function authenticateUser() {
+            const token = document.getElementById('token-input').value.trim();
+            const loginBtn = document.getElementById('login-btn');
+            const messageDiv = document.getElementById('login-message');
+            
+            if (!token) {
+                showMessage('Por favor, digite um token válido.', 'error');
+                return;
+            }
+
+            // Desabilitar botão e mostrar loading
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Conectando...';
+            showMessage('Verificando token no servidor...', 'loading');
+
+            try {
+                // Verificar se o token existe no Firebase
+                const userData = await getUserDataFromFirebase(token);
+                
+                if (userData) {
+                    // Token válido, salvar dados de autenticação no localStorage
+                    localStorage.setItem('authToken', token);
+                    localStorage.setItem('telegramId', userData.telegramId || 'N/A');
+                    localStorage.setItem('username', userData.username || 'Usuário');
+                    localStorage.setItem('firstName', userData.firstName || '');
+                    localStorage.setItem('lastName', userData.lastName || '');
+                    
+                    // Registrar o login no Firebase
+                    await registerLogin(token, userData);
+                    
+                    showMessage('Autenticação realizada com sucesso!', 'success');
+                    
+                    // Aguardar um pouco e mostrar o conteúdo principal
+                    setTimeout(() => {
+                        showMainContent();
+                    }, 1500);
                 } else {
-                    countdownElement.innerHTML = `Atualizando em ${counter} segundos...`;
+                    showMessage('Token inválido ou não encontrado no servidor.', 'error');
+                }
+            } catch (error) {
+                console.error('Erro na autenticação:', error);
+                showMessage('Erro de conexão com o servidor. Tente novamente.', 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Conectar Conta';
+            }
+        }
+
+        // Função para registrar o login no Firebase
+        async function registerLogin(token, userData) {
+            try {
+                const loginData = {
+                    token: token,
+                    telegramId: userData.telegramId,
+                    username: userData.username,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    ip: 'client-side' // Não é possível obter IP real do lado cliente
+                };
+                
+                await database.ref('logins').push(loginData);
+                console.log('Login registrado com sucesso');
+            } catch (error) {
+                console.error('Erro ao registrar login:', error);
+            }
+        }
+
+        // Função para mostrar mensagens
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('login-message');
+            messageDiv.textContent = message;
+            messageDiv.className = 'message ' + type + '-message';
+        }
+
+        // Função para mostrar o conteúdo principal
+        function showMainContent() {
+            const username = localStorage.getItem('username');
+            const telegramId = localStorage.getItem('telegramId');
+            
+            // Atualizar informações do usuário
+            document.getElementById('current-username').textContent = username;
+            document.getElementById('current-telegram-id').textContent = telegramId;
+            
+            // Mostrar conteúdo principal e ocultar login
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            
+            // Iniciar o sistema de anúncios
+            initializeAds();
+        }
+
+        // Função para inicializar os anúncios
+        function initializeAds() {
+            // Exibir a mensagem de carregamento
+            document.getElementById('reward-ad').style.display = 'block';
+            
+            // Mostrar o anúncio através do script da Monetag
+            if (typeof window.show_9196656 === 'function') {
+                window.show_9196656();  // Chama a função da Monetag para exibir o anúncio
+            }
+
+            // Iniciar o contador de 15 segundos após o anúncio ser exibido
+            startAdTimer();
+        }
+
+        // Função para gerar ID único de sessão
+        function generateSessionId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Função para registrar visualização no Firebase
+        function recordAdView(adZone) {
+            const sessionId = generateSessionId();
+            const timestamp = new Date().toISOString();
+            const userAgent = navigator.userAgent;
+            const referrer = document.referrer || 'direct';
+            const telegramId = localStorage.getItem('telegramId');
+            const username = localStorage.getItem('username');
+            const firstName = localStorage.getItem('firstName');
+            const lastName = localStorage.getItem('lastName');
+            const authToken = localStorage.getItem('authToken');
+            
+            const adViewData = {
+                adZone: adZone,
+                timestamp: timestamp,
+                sessionId: sessionId,
+                userAgent: userAgent,
+                referrer: referrer,
+                url: window.location.href,
+                // Dados do usuário vinculado ao Telegram
+                user: {
+                    token: authToken,
+                    telegramId: telegramId,
+                    username: username,
+                    firstName: firstName,
+                    lastName: lastName
+                }
+            };
+
+            // Salvar no Firebase Realtime Database
+            database.ref('ad_views').push(adViewData)
+                .then(() => {
+                    console.log('Visualização registrada com sucesso!', adViewData);
+                })
+                .catch((error) => {
+                    console.error('Erro ao registrar visualização:', error);
+                });
+        }
+
+        // Função que será chamada quando o anúncio terminar
+        async function adFinished() {
+            const rewardAdDiv = document.getElementById('reward-ad');
+            rewardAdDiv.innerHTML = '<div class="reward-message">Parabéns! Você ganhou 10 pontos!</div>';
+            
+            // Adicionar 10 pontos ao usuário
+            const authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                try {
+                    const userData = await getUserDataFromFirebase(authToken);
+                    if (userData && userData.uid) {
+                        addPointsToUser(userData.uid, 10);
+                    } else {
+                        console.error('UID não encontrado para o token:', authToken);
+                    }
+                } catch (error) {
+                    console.error('Erro ao obter UID do token:', error);
+                }
+            }
+        }
+
+        // Função para adicionar pontos ao usuário no Firebase
+        async function addPointsToUser(uid, points) {
+            try {
+                // Atualizar dailyPoints na seção ranking
+                const rankingRef = database.ref('ranking/' + uid);
+                const rankingSnapshot = await rankingRef.once('value');
+                let currentDailyPoints = 0;
+                if (rankingSnapshot.exists() && rankingSnapshot.val().dailyPoints !== undefined) {
+                    currentDailyPoints = rankingSnapshot.val().dailyPoints;
+                }
+                const newDailyPoints = currentDailyPoints + points;
+                await rankingRef.update({ dailyPoints: newDailyPoints });
+                console.log(`Adicionados ${points} pontos diários ao usuário ${uid}. Novo total diário: ${newDailyPoints}`);
+
+                // Atualizar balance na seção users
+                const usersRef = database.ref('users/' + uid);
+                const usersSnapshot = await usersRef.once('value');
+                let currentBalance = 0;
+                if (usersSnapshot.exists() && usersSnapshot.val().balance !== undefined) {
+                    currentBalance = usersSnapshot.val().balance;
+                }
+                const newBalance = currentBalance + points;
+                await usersRef.update({ balance: newBalance });
+                console.log(`Adicionados ${points} pontos ao balance do usuário ${uid}. Novo balance: ${newBalance}`);
+            } catch (error) {
+                console.error('Erro ao adicionar pontos ao usuário:', error);
+            }
+        }
+
+        // Função para iniciar o contador do anúncio
+        function startAdTimer() {
+            let timeLeft = 15; // 15 segundos
+            const rewardAdDiv = document.getElementById('reward-ad');
+            const progressBar = document.querySelector('.progress-fill');
+            
+            rewardAdDiv.innerHTML = `
+                <span class="ad-icon">⏱️</span>
+                <div class="ad-text">Anúncio em andamento</div>
+                <div class="timer">${timeLeft}s</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            `;
+
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                const progress = ((15 - timeLeft) / 15) * 100;
+                
+                document.querySelector('.timer').textContent = timeLeft + 's';
+                document.querySelector('.progress-fill').style.width = progress + '%';
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    adFinished(); // Chama a função quando o tempo acabar
                 }
             }, 1000);
         }
 
-        window.onload = function() {
-            // Start countdown immediately
-            startCountdown(18);
-            // Try to show ad, with retry mechanism
-            function attemptShowAd(retries = 3, delay = 1000) {
-                if (typeof show_9390915 === 'function') {
-                    showAd();
-                } else if (retries > 0) {
-                    console.warn(`SDK não carregado, tentando novamente em ${delay}ms... (${retries} tentativas restantes)`);
-                    setTimeout(() => attemptShowAd(retries - 1, delay * 2), delay);
-                } else {
-                    document.getElementById('reward-ad').innerHTML = '<p>Erro: SDK do Monetag não carregado. Atualizando em breve...</p>';
-                    console.error('Erro: show_9390915 não está definido após tentativas.');
-                    startAdTimer(); // Proceed to refresh even if SDK fails
-                }
+        // Função para fazer logout
+        function logout() {
+            clearAuthData();
+            showLoginScreen();
+        }
+
+        // Chamar a função de verificação de autenticação ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuthentication()) {
+                showLoginScreen();
             }
-            attemptShowAd();
-        };
+        });
+
+        // Adicionar evento de Enter no campo de token
+        document.addEventListener('DOMContentLoaded', () => {
+            const tokenInput = document.getElementById('token-input');
+            if (tokenInput) {
+                tokenInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        authenticateUser();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
