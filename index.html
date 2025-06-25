@@ -94,17 +94,12 @@
             padding: 32px;
         }
 
-        /* Estilos para a tela de verificação do Telegram */
-        .telegram-check-screen {
+        /* Estilos para a tela de carregamento/autenticação */
+        .auth-screen {
             display: block;
         }
 
-        /* Estilos para a tela de login */
-        .login-screen {
-            display: none;
-        }
-
-        .login-title {
+        .auth-title {
             font-size: 24px;
             font-weight: 600;
             color: #2d3748;
@@ -112,159 +107,12 @@
             text-align: center;
         }
 
-        .login-description {
+        .auth-description {
             color: #718096;
             font-size: 14px;
             text-align: center;
             margin-bottom: 32px;
             line-height: 1.5;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #4a5568;
-            margin-bottom: 8px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 400;
-            color: #2d3748;
-            background: #f7fafc;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: #a0aec0;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-
-        .message {
-            margin-top: 16px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .error-message {
-            background: #fed7d7;
-            color: #c53030;
-            border: 1px solid #feb2b2;
-        }
-
-        .success-message {
-            background: #c6f6d5;
-            color: #2f855a;
-            border: 1px solid #9ae6b4;
-        }
-
-        .loading {
-            background: #fef5e7;
-            color: #d69e2e;
-            border: 1px solid #f6e05e;
-        }
-
-        .warning-message {
-            background: #fef5e7;
-            color: #d69e2e;
-            border: 1px solid #f6e05e;
-        }
-
-        .instructions {
-            background: #edf2f7;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 24px;
-        }
-
-        .instructions h4 {
-            color: #2d3748;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-        }
-
-        .instructions h4::before {
-            content: '💡';
-            margin-right: 8px;
-        }
-
-        .instructions p {
-            color: #4a5568;
-            font-size: 14px;
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-
-        .instructions .note {
-            color: #d69e2e;
-            font-style: italic;
-            font-size: 13px;
         }
 
         /* Ocultar a tela principal inicialmente */
@@ -372,12 +220,6 @@
             margin-bottom: 8px;
         }
 
-        .timer {
-            color: #667eea;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
         .progress-bar {
             width: 100%;
             height: 6px;
@@ -451,6 +293,67 @@
             100% { transform: rotate(360deg); }
         }
 
+        .message {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        .loading {
+            background: #fef5e7;
+            color: #d69e2e;
+            border: 1px solid #f6e05e;
+        }
+
+        .instructions {
+            background: #edf2f7;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .instructions h4 {
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .instructions h4::before {
+            content: '💡';
+            margin-right: 8px;
+        }
+
+        .instructions p {
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .instructions .note {
+            color: #d69e2e;
+            font-style: italic;
+            font-size: 13px;
+        }
+
         /* Responsividade */
         @media (max-width: 480px) {
             .container {
@@ -507,71 +410,31 @@
     </style>
 </head>
 <body>
-    <!-- Tela de Verificação do Telegram -->
-    <div id="telegram-check-screen" class="container telegram-check-screen">
+    <!-- Tela de Autenticação -->
+    <div id="auth-screen" class="container auth-screen">
         <div class="header">
             <div class="logo">Monetag Pro</div>
             <div class="subtitle">Sistema de Recompensas Inteligente</div>
         </div>
         
         <div class="content">
-            <h2 class="login-title">Verificando ambiente...</h2>
-            <p class="login-description">
-                Aguarde enquanto verificamos se você está acessando através do Telegram.
+            <h2 class="auth-title">Conectando...</h2>
+            <p class="auth-description">
+                Aguarde enquanto conectamos com seu ID do Telegram.
             </p>
             
             <div class="loading-spinner">
                 <div class="spinner"></div>
             </div>
             
-            <div id="telegram-check-message"></div>
+            <div id="auth-message"></div>
 
             <div class="instructions">
-                <h4>Requisitos do sistema</h4>
-                <p>• Este aplicativo deve ser aberto através do Telegram</p>
-                <p>• Funciona como Telegram Web App ou Mini App</p>
-                <p>• Não é compatível com navegadores comuns</p>
-                <p class="note">Nota: A verificação é automática e leva alguns segundos</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela de Login -->
-    <div id="login-screen" class="container login-screen">
-        <div class="header">
-            <div class="logo">Monetag Pro</div>
-            <div class="subtitle">Sistema de Recompensas Inteligente</div>
-        </div>
-        
-        <div class="content">
-            <h2 class="login-title">Bem-vindo de volta!</h2>
-            <p class="login-description">
-                Digite seu token de acesso para conectar sua conta do Telegram e começar a ganhar recompensas.
-            </p>
-            
-            <div class="form-group">
-                <label class="form-label" for="token-input">Token de Acesso</label>
-                <input 
-                    type="text" 
-                    id="token-input" 
-                    class="form-input"
-                    placeholder="Cole seu token aqui..."
-                    maxlength="50"
-                >
-            </div>
-            
-            <button id="login-btn" class="btn-primary" onclick="authenticateUser()">
-                Conectar Conta
-            </button>
-            
-            <div id="login-message"></div>
-
-            <div class="instructions">
-                <h4>Como obter seu token</h4>
-                <p>• Os tokens são gerenciados de forma segura no Firebase</p>
-                <p>• Cada token está vinculado exclusivamente à sua conta do Telegram</p>
-                <p>• Mantenha seu token em segurança e não o compartilhe</p>
-                <p class="note">Nota: Todos os tokens são validados em tempo real no servidor</p>
+                <h4>Como funciona</h4>
+                <p>• O aplicativo usa seu ID do Telegram para autenticação</p>
+                <p>• Não é necessário inserir tokens ou senhas</p>
+                <p>• A conexão é automática e segura</p>
+                <p class="note">Nota: Funciona melhor quando aberto através do Telegram</p>
             </div>
         </div>
     </div>
@@ -587,10 +450,9 @@
             <div class="user-info">
                 <div class="user-details">
                     <div>
-                        <div class="user-name" id="current-username">Carregando...</div>
+                        <div class="user-name" id="current-username">Usuário Telegram</div>
                         <div class="user-id">ID: <span id="current-telegram-id">---</span></div>
                     </div>
-                    <button class="logout-btn" onclick="logout()">Sair</button>
                 </div>
             </div>
             
@@ -636,183 +498,89 @@
         // Variáveis globais para dados do usuário
         let currentUserId = null;
         let currentUsername = null;
-        let isInTelegram = false;
 
-        // Função para verificar se está no ambiente Telegram
-        function checkTelegramEnvironment() {
-            const messageDiv = document.getElementById('telegram-check-message');
+        // Função para tentar autenticação via Telegram ID
+        function tryTelegramAuth() {
+            const messageDiv = document.getElementById('auth-message');
             
             try {
-                // Verificar múltiplos indicadores do ambiente Telegram
-                const isTelegramWebApp = typeof Telegram !== 'undefined' && Telegram.WebApp;
-                const isTelegramUserAgent = navigator.userAgent.includes('Telegram');
-                const hasTelegramParent = window.parent !== window && window.parent.location.hostname.includes('telegram');
-                const hasTelegramReferrer = document.referrer.includes('telegram');
-                
-                // Verificar se há parâmetros específicos do Telegram na URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const hasTelegramParams = urlParams.has('tgWebAppData') || urlParams.has('tgWebAppVersion');
-                
-                // Verificar se está em um iframe (comum em Web Apps)
-                const isInIframe = window !== window.top;
-                
-                // Considerar que está no Telegram se pelo menos uma condição for verdadeira
-                isInTelegram = isTelegramWebApp || isTelegramUserAgent || hasTelegramParent || 
-                              hasTelegramReferrer || hasTelegramParams || 
-                              (isInIframe && window.location.protocol === 'https:');
-
-                if (isInTelegram && isTelegramWebApp) {
-                    // Se está no Telegram e tem o WebApp, verificar se o userId está disponível
+                // Tentar obter dados do Telegram Web App
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
                     const initData = Telegram.WebApp.initDataUnsafe;
                     const userId = initData.user?.id;
+                    const username = initData.user?.username || initData.user?.first_name || 'Usuário';
                     
                     if (userId) {
-                        // userId encontrado - sucesso completo
+                        // ID encontrado - autenticação bem-sucedida
                         currentUserId = userId;
-                        currentUsername = initData.user?.username || initData.user?.first_name || 'Usuário';
+                        currentUsername = username;
                         
                         messageDiv.innerHTML = `
-                            <div class="success-message">✅ Ambiente Telegram detectado!</div>
-                            <div class="success-message" style="margin-top: 8px;">✅ ID do usuário encontrado: ${userId}</div>
-                            <div style="margin-top: 16px; text-align: center;">
-                                <p style="color: #2f855a; font-weight: 600;">Redirecionando para o aplicativo...</p>
-                            </div>
+                            <div class="success-message">✅ Conectado com sucesso!</div>
+                            <div class="success-message" style="margin-top: 8px;">ID: ${userId}</div>
                         `;
                         
-                        // Pular o login e ir direto para o conteúdo principal
+                        // Aguardar 2 segundos e mostrar o conteúdo principal
                         setTimeout(() => {
                             showMainContent();
                         }, 2000);
-                    } else {
-                        // Telegram detectado mas userId não encontrado
-                        messageDiv.innerHTML = `
-                            <div class="warning-message">⚠️ Ambiente Telegram detectado, mas ID do usuário não encontrado</div>
-                            <div class="instructions" style="margin-top: 16px;">
-                                <h4>Possíveis soluções</h4>
-                                <p>• Certifique-se de que o Web App foi iniciado corretamente</p>
-                                <p>• Tente fechar e abrir novamente o aplicativo</p>
-                                <p>• Verifique se você tem permissão para usar Web Apps</p>
-                                <p class="note">O aplicativo precisa do seu ID do Telegram para funcionar</p>
-                            </div>
-                        `;
+                        return;
                     }
-                } else if (isInTelegram) {
-                    // Está no Telegram mas sem WebApp SDK
-                    messageDiv.innerHTML = `
-                        <div class="warning-message">⚠️ Ambiente Telegram detectado, mas SDK não disponível</div>
-                        <div class="instructions" style="margin-top: 16px;">
-                            <h4>Como resolver</h4>
-                            <p>• Abra o aplicativo através de um Web App do Telegram</p>
-                            <p>• Use um bot que suporte Web Apps</p>
-                            <p>• Certifique-se de que está usando a versão mais recente do Telegram</p>
-                            <p class="note">Continuando com login manual...</p>
-                        </div>
-                    `;
-                    
-                    // Aguardar e mostrar tela de login
-                    setTimeout(() => {
-                        showLoginScreen();
-                    }, 4000);
-                } else {
-                    // Não está no Telegram
-                    messageDiv.innerHTML = `
-                        <div class="error-message">❌ Este aplicativo deve ser aberto através do Telegram</div>
-                        <div class="instructions" style="margin-top: 16px;">
-                            <h4>Como acessar corretamente</h4>
-                            <p>• Abra o aplicativo através de um bot do Telegram</p>
-                            <p>• Use um link de Web App do Telegram</p>
-                            <p>• Acesse através de um Mini App</p>
-                            <p class="note">Navegadores comuns não são suportados</p>
-                        </div>
-                    `;
                 }
-            } catch (error) {
-                console.error('Erro na verificação do ambiente Telegram:', error);
+                
+                // Se não conseguiu obter o ID do Telegram, mostrar erro
                 messageDiv.innerHTML = `
-                    <div class="warning-message">⚠️ Erro na verificação do ambiente</div>
+                    <div class="error-message">❌ ID do Telegram não encontrado</div>
                     <div class="instructions" style="margin-top: 16px;">
-                        <h4>Tentando continuar</h4>
-                        <p>• Ocorreu um erro durante a verificação</p>
-                        <p>• Tentando prosseguir com login manual</p>
-                        <p class="note">Erro: ${error.message}</p>
+                        <h4>Para usar este aplicativo</h4>
+                        <p>• Abra através de um bot do Telegram</p>
+                        <p>• Use um link de Telegram Web App</p>
+                        <p>• Certifique-se de que está logado no Telegram</p>
+                        <p class="note">O aplicativo requer seu ID do Telegram para funcionar</p>
                     </div>
                 `;
                 
-                // Em caso de erro, assumir que pode estar no Telegram e continuar
-                setTimeout(() => {
-                    showLoginScreen();
-                }, 3000);
-            }
-        }
-
-        // Função para mostrar a tela de login
-        function showLoginScreen() {
-            document.getElementById('telegram-check-screen').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'block';
-        }
-
-        // Função para mostrar mensagens na tela de login
-        function showLoginMessage(message, type) {
-            const messageDiv = document.getElementById('login-message');
-            messageDiv.textContent = message;
-            messageDiv.className = 'message ' + type + '-message';
-        }
-
-        // Função para autenticar usuário
-        async function authenticateUser() {
-            const token = document.getElementById('token-input').value.trim();
-            const loginBtn = document.getElementById('login-btn');
-            
-            if (!token) {
-                showLoginMessage('Por favor, insira seu token de acesso.', 'error');
-                return;
-            }
-
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Conectando...';
-            showLoginMessage('Validando token...', 'loading');
-
-            try {
-                // Verificar se o token existe no Firebase
-                const tokenRef = database.ref('tokens/' + token);
-                const snapshot = await tokenRef.once('value');
-                
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    currentUserId = userData.telegramId;
-                    currentUsername = userData.username || 'Usuário';
-                    
-                    showLoginMessage('Login realizado com sucesso!', 'success');
-                    
-                    // Aguardar um pouco e mostrar o conteúdo principal
-                    setTimeout(() => {
-                        showMainContent();
-                    }, 1500);
-                } else {
-                    showLoginMessage('Token inválido ou não encontrado no servidor.', 'error');
-                }
             } catch (error) {
                 console.error('Erro na autenticação:', error);
-                showLoginMessage('Erro ao conectar com o servidor. Tente novamente.', 'error');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Conectar Conta';
+                
+                messageDiv.innerHTML = `
+                    <div class="error-message">❌ Erro na conexão com o Telegram</div>
+                    <div class="instructions" style="margin-top: 16px;">
+                        <h4>Erro detectado</h4>
+                        <p>• Não foi possível conectar com o Telegram</p>
+                        <p>• Verifique se você está usando um Telegram Web App</p>
+                        <p>• Tente recarregar a página</p>
+                        <p class="note">Erro: ${error.message}</p>
+                    </div>
+                `;
             }
         }
 
         // Função para mostrar o conteúdo principal
         function showMainContent() {
+            // Verificar se temos um userId válido antes de mostrar o conteúdo
+            if (!currentUserId) {
+                console.error('Tentativa de mostrar conteúdo principal sem userId válido');
+                return;
+            }
+            
             // Atualizar informações do usuário
             document.getElementById('current-username').textContent = currentUsername;
             document.getElementById('current-telegram-id').textContent = currentUserId;
             
-            // Mostrar conteúdo principal e ocultar tela de login
-            document.getElementById('login-screen').style.display = 'none';
+            // Mostrar conteúdo principal e ocultar tela de autenticação
+            document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
         }
 
         // Função para mostrar anúncio
         function mostrarAnuncio() {
+            // Verificar se temos um userId válido antes de mostrar anúncio
+            if (!currentUserId) {
+                console.error('Tentativa de mostrar anúncio sem userId válido');
+                return;
+            }
+            
             const rewardAdDiv = document.getElementById('reward-ad');
             
             // Mostrar mensagem de carregamento
@@ -929,26 +697,11 @@
             }
         }
 
-        // Função para fazer logout
-        function logout() {
-            currentUserId = null;
-            currentUsername = null;
-            
-            // Voltar para a tela de verificação do Telegram
-            document.getElementById('main-content').style.display = 'none';
-            document.getElementById('telegram-check-screen').style.display = 'block';
-            
-            // Reiniciar a verificação
-            setTimeout(() => {
-                checkTelegramEnvironment();
-            }, 1000);
-        }
-
         // Inicializar aplicativo quando a página carregar
         window.onload = function() {
-            // Aguardar 1 segundo e iniciar a verificação do ambiente Telegram
+            // Aguardar 1 segundo e iniciar a autenticação via Telegram ID
             setTimeout(() => {
-                checkTelegramEnvironment();
+                tryTelegramAuth();
             }, 1000);
         };
     </script>
