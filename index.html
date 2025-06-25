@@ -94,10 +94,23 @@
             padding: 32px;
         }
 
-        /* Estilos para a tela de carregamento/autenticação */
-        .auth-screen {
+        /* Estilos para a tela de verificação do Telegram */
+        .telegram-check-screen {
             display: block;
             transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Estilos para a tela de autenticação por token */
+        .token-auth-screen {
+            display: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Ocultar a tela principal inicialmente */
+        .main-content {
+            display: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(30px);
         }
 
         .auth-title {
@@ -116,11 +129,61 @@
             line-height: 1.5;
         }
 
-        /* Ocultar a tela principal inicialmente */
-        .main-content {
-            display: none;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            transform: translateY(30px);
+        /* Estilos para formulário de token */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .form-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         /* Estilos para a tela principal */
@@ -149,23 +212,6 @@
         .user-id {
             color: #718096;
             font-size: 14px;
-        }
-
-        .logout-btn {
-            background: #e53e3e;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #c53030;
-            transform: translateY(-1px);
         }
 
         .main-title {
@@ -413,8 +459,8 @@
     </style>
 </head>
 <body>
-    <!-- Tela de Autenticação -->
-    <div id="auth-screen" class="container auth-screen">
+    <!-- Tela de Verificação do Telegram -->
+    <div id="telegram-check-screen" class="container telegram-check-screen">
         <div class="header">
             <div class="logo">Monetag Pro</div>
             <div class="subtitle">Sistema de Recompensas Inteligente</div>
@@ -430,7 +476,7 @@
                 <div class="spinner"></div>
             </div>
             
-            <div id="auth-message"></div>
+            <div id="telegram-message"></div>
 
             <div class="instructions">
                 <h4>Como funciona</h4>
@@ -438,6 +484,48 @@
                 <p>• Não é necessário inserir tokens ou senhas</p>
                 <p>• A conexão é automática e segura</p>
                 <p class="note">Nota: Funciona melhor quando aberto através do Telegram</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Autenticação por Token -->
+    <div id="token-auth-screen" class="container token-auth-screen">
+        <div class="header">
+            <div class="logo">Monetag Pro</div>
+            <div class="subtitle">Autenticação Segura</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="auth-title">Insira seu Token</h2>
+            <p class="auth-description">
+                Para continuar, insira seu token de acesso válido.
+            </p>
+            
+            <form id="token-form">
+                <div class="form-group">
+                    <label for="token-input" class="form-label">Token de Acesso</label>
+                    <input 
+                        type="text" 
+                        id="token-input" 
+                        class="form-input" 
+                        placeholder="Digite seu token aqui..."
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="form-button" id="token-submit">
+                    Conectar Conta
+                </button>
+            </form>
+            
+            <div id="token-message"></div>
+
+            <div class="instructions">
+                <h4>Sobre o Token</h4>
+                <p>• O token é fornecido pelo administrador do sistema</p>
+                <p>• Mantenha seu token seguro e não compartilhe</p>
+                <p>• Em caso de problemas, entre em contato com o suporte</p>
+                <p class="note">Seu ID do Telegram: <span id="telegram-id-display">---</span></p>
             </div>
         </div>
     </div>
@@ -501,10 +589,11 @@
         // Variáveis globais para dados do usuário
         let currentUserId = null;
         let currentUsername = null;
+        let telegramUserId = null;
 
         // Função para tentar autenticação via Telegram ID
         function tryTelegramAuth() {
-            const messageDiv = document.getElementById('auth-message');
+            const messageDiv = document.getElementById('telegram-message');
             
             try {
                 // Tentar obter dados do Telegram Web App
@@ -514,18 +603,18 @@
                     const username = initData.user?.username || initData.user?.first_name || 'Usuário';
                     
                     if (userId) {
-                        // ID encontrado - autenticação bem-sucedida
-                        currentUserId = userId;
+                        // ID encontrado - ir para tela de autenticação por token
+                        telegramUserId = userId;
                         currentUsername = username;
                         
                         messageDiv.innerHTML = `
-                            <div class="success-message">✅ Conectado com sucesso!</div>
+                            <div class="success-message">✅ ID do Telegram encontrado!</div>
                             <div class="success-message" style="margin-top: 8px;">ID: ${userId}</div>
                         `;
                         
-                        // Aguardar 2 segundos e mostrar o conteúdo principal
+                        // Aguardar 2 segundos e mostrar a tela de token
                         setTimeout(() => {
-                            showMainContent();
+                            showTokenAuthScreen();
                         }, 2000);
                         return;
                     }
@@ -559,6 +648,117 @@
             }
         }
 
+        // Função para mostrar a tela de autenticação por token
+        function showTokenAuthScreen() {
+            // Atualizar o ID do Telegram na tela de token
+            document.getElementById('telegram-id-display').textContent = telegramUserId;
+            
+            // Ocultar completamente a tela de verificação do Telegram
+            const telegramScreen = document.getElementById('telegram-check-screen');
+            const tokenScreen = document.getElementById('token-auth-screen');
+            
+            // Usar transição suave
+            telegramScreen.style.opacity = '0';
+            telegramScreen.style.transform = 'translateY(-30px)';
+            
+            setTimeout(() => {
+                // Remover completamente a tela de verificação do Telegram
+                telegramScreen.style.display = 'none';
+                telegramScreen.style.visibility = 'hidden';
+                telegramScreen.style.position = 'absolute';
+                telegramScreen.style.left = '-9999px';
+                
+                // Mostrar a tela de autenticação por token
+                tokenScreen.style.display = 'block';
+                tokenScreen.style.visibility = 'visible';
+                tokenScreen.style.opacity = '0';
+                
+                // Animar entrada da tela de token
+                setTimeout(() => {
+                    tokenScreen.style.opacity = '1';
+                    tokenScreen.style.transform = 'translateY(0)';
+                }, 50);
+            }, 300);
+        }
+
+        // Função para validar token no Firebase
+        async function validateToken(token) {
+            try {
+                const tokenRef = database.ref('tokens/' + token);
+                const snapshot = await tokenRef.once('value');
+                
+                if (snapshot.exists()) {
+                    const tokenData = snapshot.val();
+                    
+                    // Verificar se o token está ativo
+                    if (tokenData.active === true) {
+                        return {
+                            valid: true,
+                            data: tokenData
+                        };
+                    } else {
+                        return {
+                            valid: false,
+                            error: 'Token inativo ou expirado'
+                        };
+                    }
+                } else {
+                    return {
+                        valid: false,
+                        error: 'Token não encontrado'
+                    };
+                }
+            } catch (error) {
+                console.error('Erro ao validar token:', error);
+                return {
+                    valid: false,
+                    error: 'Erro na validação: ' + error.message
+                };
+            }
+        }
+
+        // Função para processar autenticação por token
+        async function processTokenAuth(token) {
+            const messageDiv = document.getElementById('token-message');
+            const submitButton = document.getElementById('token-submit');
+            
+            // Desabilitar botão e mostrar carregamento
+            submitButton.disabled = true;
+            submitButton.textContent = 'Validando...';
+            
+            messageDiv.innerHTML = '<div class="loading">🔄 Validando token...</div>';
+            
+            try {
+                const validation = await validateToken(token);
+                
+                if (validation.valid) {
+                    // Token válido - definir usuário atual
+                    currentUserId = telegramUserId;
+                    
+                    messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Redirecionando...</div>';
+                    
+                    // Aguardar 2 segundos e mostrar o conteúdo principal
+                    setTimeout(() => {
+                        showMainContent();
+                    }, 2000);
+                } else {
+                    // Token inválido
+                    messageDiv.innerHTML = `<div class="error-message">❌ ${validation.error}</div>`;
+                    
+                    // Reabilitar botão
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Conectar Conta';
+                }
+            } catch (error) {
+                console.error('Erro no processamento:', error);
+                messageDiv.innerHTML = '<div class="error-message">❌ Erro interno. Tente novamente.</div>';
+                
+                // Reabilitar botão
+                submitButton.disabled = false;
+                submitButton.textContent = 'Conectar Conta';
+            }
+        }
+
         // Função para mostrar o conteúdo principal
         function showMainContent() {
             // Verificar se temos um userId válido antes de mostrar o conteúdo
@@ -571,20 +771,20 @@
             document.getElementById('current-username').textContent = currentUsername;
             document.getElementById('current-telegram-id').textContent = currentUserId;
             
-            // Ocultar completamente a tela de autenticação
-            const authScreen = document.getElementById('auth-screen');
+            // Ocultar completamente a tela de autenticação por token
+            const tokenScreen = document.getElementById('token-auth-screen');
             const mainContent = document.getElementById('main-content');
             
-            // Usar transição suave para evitar bugs visuais
-            authScreen.style.opacity = '0';
-            authScreen.style.transform = 'translateY(-30px)';
+            // Usar transição suave
+            tokenScreen.style.opacity = '0';
+            tokenScreen.style.transform = 'translateY(-30px)';
             
             setTimeout(() => {
-                // Remover completamente a tela de autenticação do DOM
-                authScreen.style.display = 'none';
-                authScreen.style.visibility = 'hidden';
-                authScreen.style.position = 'absolute';
-                authScreen.style.left = '-9999px';
+                // Remover completamente a tela de token
+                tokenScreen.style.display = 'none';
+                tokenScreen.style.visibility = 'hidden';
+                tokenScreen.style.position = 'absolute';
+                tokenScreen.style.left = '-9999px';
                 
                 // Mostrar o conteúdo principal
                 mainContent.style.display = 'block';
@@ -723,9 +923,23 @@
             }
         }
 
+        // Event listener para o formulário de token
+        document.getElementById('token-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const token = document.getElementById('token-input').value.trim();
+            
+            if (token) {
+                processTokenAuth(token);
+            } else {
+                document.getElementById('token-message').innerHTML = 
+                    '<div class="error-message">❌ Por favor, insira um token válido</div>';
+            }
+        });
+
         // Inicializar aplicativo quando a página carregar
         window.onload = function() {
-            // Aguardar 1 segundo e iniciar a autenticação via Telegram ID
+            // Aguardar 1 segundo e iniciar a verificação do Telegram
             setTimeout(() => {
                 tryTelegramAuth();
             }, 1000);
