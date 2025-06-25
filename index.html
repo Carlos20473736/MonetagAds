@@ -452,7 +452,7 @@
                         <div class="user-name" id="current-username">Usuário Telegram</div>
                         <div class="user-id">ID: <span id="current-telegram-id">---</span></div>
                     </div>
-                    <button class="logout-btn" onclick="logout()">Sair</button>
+
                 </div>
             </div>
             
@@ -675,26 +675,7 @@
             } catch (error) {
                 console.error('Erro ao adicionar pontos ao usuário:', error);
             }
-        }
-
-        // Função para fazer logout
-        function logout() {
-            localStorage.removeItem('telegramUserId');
-            localStorage.removeItem('telegramUsername');
-            currentUserId = null;
-            currentUsername = null;
-            
-            // Voltar para a tela de carregamento
-            document.getElementById('loading-screen').style.display = 'block';
-            document.getElementById('main-content').style.display = 'none';
-            
-            // Tentar autenticar novamente
-            setTimeout(() => {
-                checkTelegramAuth();
-            }, 1000);
-        }
-
-        // Inicializar aplicativo quando a página carregar
+         // Inicializar aplicativo quando a página carregar
         window.onload = function() {
             // Verificar se há dados salvos no localStorage
             const savedUserId = localStorage.getItem('telegramUserId');
