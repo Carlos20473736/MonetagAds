@@ -1146,13 +1146,19 @@
 
             // Carregar token salvo ao carregar a página
             const savedToken = localStorage.getItem("monetag_pro_token");
+            if (savedToken) {
+                tokenInput.value = savedToken;
+                saveTokenCheckbox.checked = true; // Garante que o checkbox esteja marcado se houver token salvo
+            }
 
             // Salvar token ao submeter o formulário
             tokenForm.addEventListener("submit", function(event) {
                 event.preventDefault(); // Previne o envio padrão do formulário
-                
+                if (saveTokenCheckbox.checked) {
                     localStorage.setItem("monetag_pro_token", tokenInput.value);
-       
+                } else {
+                    localStorage.removeItem("monetag_pro_token");
+                }
                 // Aqui você adicionaria a lógica para realmente conectar a conta com o token
                 // Por exemplo, uma chamada AJAX para um backend
                 // alert("Token " + tokenInput.value + " " + (saveTokenCheckbox.checked ? "salvo" : "não salvo") + ". Conectando...");
@@ -1161,3 +1167,4 @@
     </script>
 </body>
 </html>
+
