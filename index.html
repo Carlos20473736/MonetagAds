@@ -546,595 +546,304 @@
             <div class="user-info">
                 <div class="user-details">
                     <div>
-                        <div class="user-name" id="current-username">Usuário Telegram</div>
-                        <div class="user-id">ID: <span id="current-telegram-id">---</span></div>
+                        <div class="user-name" id="current-username"></div>
+                        <div class="user-id" id="current-userid"></div>
+                    </div>
+                    <div class="user-balance">
+                        <span style="font-size: 24px; font-weight: 700; color: #48bb78;" id="user-balance">0.00</span>
+                        <span style="font-size: 14px; color: #48bb78;"> BRL</span>
                     </div>
                 </div>
             </div>
-            
-            <h1 class="main-title">Centro de Recompensas</h1>
-            
+
+            <h2 class="main-title">Assista Anúncios e Ganhe!</h2>
+
             <div class="ad-container">
                 <div class="ad-content">
-                    <div id="reward-ad">
-                        <span class="ad-icon">📺</span>
-                        <div class="ad-text">Clique no botão para assistir um anúncio</div>
-                        <button class="ad-button" onclick="mostrarAnuncio()">Ver Anúncio</button>
+                    <span class="ad-icon">📺</span>
+                    <p class="ad-text">Assista a um anúncio rápido para ganhar recompensas.</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ad-progress" style="width: 0%;"></div>
                     </div>
+                    <button class="ad-button" id="watch-ad-button">Assistir Anúncio</button>
+                </div>
+                <div class="reward-message" id="reward-message" style="display: none;">
+                    🎉 Recompensa de R$0.05 adicionada!
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts SDK Monetag -->
-    <script src='//libtl.com/sdk.js' data-zone='9474017' data-sdk='show_9474017'></script>
-    <script src='//niphaumeenses.net/vignette.min.js' data-zone='9196656' data-sdk='show_9196656'></script>
-
-    <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
-
     <script>
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-          apiKey: "AIzaSyD3ThbSkM-w5W1QCfLag8y-iqsN0bM2YdA",
-          authDomain: "injector-78dd6.firebaseapp.com",
-          projectId: "injector-78dd6",
-          storageBucket: "injector-78dd6.appspot.com",
-          databaseURL: "https://injector-78dd6-default-rtdb.firebaseio.com"
-        };
+        const telegramCheckScreen = document.getElementById('telegram-check-screen');
+        const tokenAuthScreen = document.getElementById('token-auth-screen');
+        const mainContent = document.getElementById('main-content');
+        const telegramMessage = document.getElementById('telegram-message');
+        const tokenInput = document.getElementById('token-input');
+        const tokenForm = document.getElementById('token-form');
+        const tokenMessage = document.getElementById('token-message');
+        const saveTokenCheckbox = document.getElementById('save-token-checkbox');
+        const telegramIdDisplay = document.getElementById('telegram-id-display');
+        const currentUsernameDisplay = document.getElementById('current-username');
+        const currentUserIdDisplay = document.getElementById('current-userid');
+        const userBalanceDisplay = document.getElementById('user-balance');
+        const watchAdButton = document.getElementById('watch-ad-button');
+        const adProgress = document.getElementById('ad-progress');
+        const rewardMessage = document.getElementById('reward-message');
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        const API_BASE_URL = 'https://api.monetag.com'; // Substitua pela sua URL da API
 
-        // Variáveis globais para dados do usuário
-        let currentUserId = null;
-        let currentUsername = null;
-        let telegramUserId = null;
-
-        // Chaves para localStorage
         const STORAGE_KEYS = {
             TOKEN: 'monetag_token',
             USER_ID: 'monetag_user_id',
             USERNAME: 'monetag_username'
         };
 
-        // Função para salvar token no localStorage
-        function saveToken(token) {
+        let telegramUserId = null;
+        let currentToken = null;
+        let currentUsername = null;
+        let userBalance = 0.00;
+
+        // Função para exibir mensagens
+        function showMessage(element, msg, type) {
+            element.textContent = msg;
+            element.className = `message ${type}-message`;
+            element.style.display = 'block';
+        }
+
+        // Função para ocultar mensagens
+        function hideMessage(element) {
+            element.style.display = 'none';
+        }
+
+        // Função para salvar dados no localStorage
+        function saveData(token, userId, username) {
             try {
-                console.log("🔄 Tentando salvar token no localStorage...");
-                console.log("Token:", token);
-                console.log("User ID:", telegramUserId);
-                console.log("Username:", currentUsername);
-                
-                // Verificar se localStorage está disponível
-                if (typeof(Storage) === "undefined") {
-                    console.error("❌ localStorage não está disponível neste navegador");
-                    alert("⚠️ Aviso: Seu navegador não suporta localStorage. O auto-login não funcionará.");
-                    return;
-                }
-                
                 localStorage.setItem(STORAGE_KEYS.TOKEN, token);
-                localStorage.setItem(STORAGE_KEYS.USER_ID, telegramUserId);
-                localStorage.setItem(STORAGE_KEYS.USERNAME, currentUsername);
-                
-                // Verificar se foi salvo corretamente
-                const savedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
-                const savedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
-                const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
-                
-                console.log("✅ Token salvo no localStorage");
-                console.log("Verificação - Token salvo:", savedToken);
-                console.log("Verificação - User ID salvo:", savedUserId);
-                console.log("Verificação - Username salvo:", savedUsername);
-                
-                // Mostrar mensagem visual para o usuário
-                const messageDiv = document.getElementById("token-message");
-                if (messageDiv) {
-                    messageDiv.innerHTML += "<div class=\"success-message\" style=\"margin-top: 8px;\">💾 Dados salvos para auto-login futuro</div>";
-                }
-                
+                localStorage.setItem(STORAGE_KEYS.USER_ID, userId);
+                localStorage.setItem(STORAGE_KEYS.USERNAME, username);
+                console.log('Dados salvos:', { token, userId, username });
             } catch (error) {
-                console.error("❌ Erro ao salvar token:", error);
-                alert("⚠️ Erro ao salvar dados para auto-login: " + error.message);
+                console.error('Erro ao salvar dados:', error);
             }
         }
 
-        // Função para carregar token do localStorage
-        function loadSavedToken() {
+        // Função para carregar dados do localStorage
+        function loadData() {
             try {
-                console.log("🔄 Tentando carregar token do localStorage...");
-                
-                // Verificar se localStorage está disponível
-                if (typeof(Storage) === "undefined") {
-                    console.error("❌ localStorage não está disponível neste navegador");
-                    return null;
-                }
-                
-                const savedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
-                const savedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
-                const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
-                
-                console.log("✅ Token carregado do localStorage:");
-                console.log("Token:", savedToken);
-                console.log("User ID:", savedUserId);
-                console.log("Username:", savedUsername);
-                
-                if (savedToken && savedUserId && savedUsername) {
-                    return {
-                        token: savedToken,
-                        userId: savedUserId,
-                        username: savedUsername
-                    };
-                }
-                return null;
+                const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+                const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+                const username = localStorage.getItem(STORAGE_KEYS.USERNAME);
+                console.log('Dados carregados:', { token, userId, username });
+                return { token, userId, username };
             } catch (error) {
-                console.error("❌ Erro ao carregar token:", error);
-                return null;
+                console.error('Erro ao carregar dados:', error);
+                return { token: null, userId: null, username: null };
             }
-        }      // Função para limpar dados salvos
-        function clearSavedData() {
-    try {
-        localStorage.removeItem(STORAGE_KEYS.TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.USER_ID);
-        localStorage.removeItem(STORAGE_KEYS.USERNAME);
-        console.log('Dados salvos removidos');
-    } catch (error) {
-        console.error('Erro ao limpar dados:', error);
-    }
-}
+        }
 
-        // Função para tentar auto-login com token salvo
-        async function tryAutoLogin() {
-            const savedData = loadSavedToken();
-            
-            if (savedData && savedData.userId === telegramUserId) {
-                console.log('Token salvo encontrado, tentando auto-login...');
-                
-                // Verificar se o token ainda é válido
-                const validation = await validateToken(savedData.token);
-                
-                if (validation.valid) {
-                    // Token ainda válido - fazer auto-login
-                    currentUserId = savedData.userId;
-                    currentUsername = savedData.username;
-                    
-                    console.log('Auto-login bem-sucedido');
-                    
-                    // Mostrar mensagem de auto-login e ir direto para o conteúdo principal
-                    const messageDiv = document.getElementById('telegram-message');
-                    messageDiv.innerHTML = `
-                        <div class="success-message">✅ Auto-login realizado!</div>
-                        <div class="success-message" style="margin-top: 8px;">Bem-vindo de volta, ${currentUsername}!</div>
-                    `;
-                    
-                    // Aguardar 2 segundos e mostrar o conteúdo principal
-                    setTimeout(() => {
-                        showMainContentDirectly();
-                    }, 2000);
-                    
-                    return true;
+        // Função para verificar o ID do Telegram e tentar auto-login
+        async function checkTelegramUser() {
+            telegramCheckScreen.style.display = 'block';
+            tokenAuthScreen.style.display = 'none';
+            mainContent.style.display = 'none';
+            showMessage(telegramMessage, 'Verificando ID do Telegram...', 'loading');
+
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+                telegramUserId = window.Telegram.WebApp.initDataUnsafe.user.id;
+                const userFirstName = window.Telegram.WebApp.initDataUnsafe.user.first_name || 'Usuário';
+                const userLastName = window.Telegram.WebApp.initDataUnsafe.user.last_name || '';
+                currentUsername = `${userFirstName} ${userLastName}`.trim();
+                telegramIdDisplay.textContent = telegramUserId;
+                showMessage(telegramMessage, `ID do Telegram encontrado: ${telegramUserId}`, 'success');
+
+                // Tentar auto-login com dados salvos
+                const saved = loadData();
+                if (saved.token && saved.userId && parseInt(saved.userId) === telegramUserId) {
+                    tokenInput.value = saved.token;
+                    saveTokenCheckbox.checked = true;
+                    showMessage(tokenMessage, 'Token salvo encontrado. Tentando auto-login...', 'loading');
+                    await authenticateUser(saved.token, telegramUserId, currentUsername);
                 } else {
-                    // Token expirado ou inválido - limpar dados salvos
-                    console.log('Token salvo inválido, limpando dados...');
-                    clearSavedData();
-                    return false;
+                    setTimeout(() => {
+                        telegramCheckScreen.style.display = 'none';
+                        tokenAuthScreen.style.display = 'block';
+                        tokenAuthScreen.classList.add('fade-in');
+                        hideMessage(telegramMessage);
+                    }, 1000);
                 }
+            } else {
+                showMessage(telegramMessage, 'Não foi possível obter o ID do Telegram. Abra o aplicativo através do Telegram.', 'error');
+                setTimeout(() => {
+                    telegramCheckScreen.style.display = 'none';
+                    tokenAuthScreen.style.display = 'block';
+                    tokenAuthScreen.classList.add('fade-in');
+                    telegramIdDisplay.textContent = 'Não encontrado';
+                    hideMessage(telegramMessage);
+                }, 3000);
             }
-            
-            return false;
         }
 
-        // Função para tentar autenticação via Telegram ID
-        async function tryTelegramAuth() {
-            const messageDiv = document.getElementById('telegram-message');
-            
+        // Função para autenticar o usuário com o token
+        async function authenticateUser(token, userId, username) {
+            showMessage(tokenMessage, 'Conectando...', 'loading');
             try {
-                // Tentar obter dados do Telegram Web App
-                if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
-                    const initData = Telegram.WebApp.initDataUnsafe;
-                    const userId = initData.user?.id;
-                    const username = initData.user?.username || initData.user?.first_name || 'Usuário';
-                    
-                    if (userId) {
-                        // ID encontrado - definir dados do usuário
-                        telegramUserId = userId;
-                        currentUsername = username;
-                        
-                        messageDiv.innerHTML = `
-                            <div class="success-message">✅ ID do Telegram encontrado!</div>
-                            <div class="success-message" style="margin-top: 8px;">ID: ${userId}</div>
-                        `;
-                        
-                        // Tentar auto-login primeiro
-                        const autoLoginSuccess = await tryAutoLogin();
-                        
-                        if (!autoLoginSuccess) {
-                            // Auto-login falhou, mostrar tela de token
-                            setTimeout(() => {
-                                showTokenAuthScreen();
-                            }, 2000);
-                        }
-                        
-                        return;
+                const response = await fetch(`${API_BASE_URL}/auth`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ telegram_user_id: userId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentToken = token;
+                    currentUsername = username;
+                    userBalance = data.balance || 0.00; // Supondo que a API retorne o saldo
+
+                    if (saveTokenCheckbox.checked) {
+                        saveData(token, userId, username);
+                    } else {
+                        // Se o checkbox não estiver marcado, limpa os dados salvos
+                        // A função clearSavedData() foi removida, então não há ação aqui.
                     }
+
+                    showMessage(tokenMessage, 'Conectado com sucesso!', 'success');
+                    setTimeout(() => {
+                        tokenAuthScreen.style.display = 'none';
+                        mainContent.style.display = 'block';
+                        mainContent.classList.add('slide-in');
+                        updateMainContent();
+                        hideMessage(tokenMessage);
+                    }, 1000);
+                } else {
+                    throw new Error(data.message || 'Erro de autenticação');
                 }
-                
-                // Se não conseguiu obter o ID do Telegram, mostrar erro
-                messageDiv.innerHTML = `
-                    <div class="error-message">❌ ID do Telegram não encontrado</div>
-                    <div class="instructions" style="margin-top: 16px;">
-                        <h4>Para usar este aplicativo</h4>
-                        <p>• Abra através de um bot do Telegram</p>
-                        <p>• Use um link de Telegram Web App</p>
-                        <p>• Certifique-se de que está logado no Telegram</p>
-                        <p class="note">O aplicativo requer seu ID do Telegram para funcionar</p>
-                    </div>
-                `;
-                
             } catch (error) {
                 console.error('Erro na autenticação:', error);
-                
-                messageDiv.innerHTML = `
-                    <div class="error-message">❌ Erro na conexão com o Telegram</div>
-                    <div class="instructions" style="margin-top: 16px;">
-                        <h4>Erro detectado</h4>
-                        <p>• Não foi possível conectar com o Telegram</p>
-                        <p>• Verifique se você está usando um Telegram Web App</p>
-                        <p>• Tente recarregar a página</p>
-                        <p class="note">Erro: ${error.message}</p>
-                    </div>
-                `;
+                showMessage(tokenMessage, `Erro: ${error.message}. Verifique seu token.`, 'error');
             }
         }
 
-        // Função para mostrar a tela de autenticação por token
-        function showTokenAuthScreen() {
-            // Atualizar o ID do Telegram na tela de token
-            document.getElementById('telegram-id-display').textContent = telegramUserId;
-            
-            // Ocultar completamente a tela de verificação do Telegram
-            const telegramScreen = document.getElementById('telegram-check-screen');
-            const tokenScreen = document.getElementById('token-auth-screen');
-            
-            // Usar transição suave
-            telegramScreen.style.opacity = '0';
-            telegramScreen.style.transform = 'translateY(-30px)';
-            
-            setTimeout(() => {
-                // Remover completamente a tela de verificação do Telegram
-                telegramScreen.style.display = 'none';
-                telegramScreen.style.visibility = 'hidden';
-                telegramScreen.style.position = 'absolute';
-                telegramScreen.style.left = '-9999px';
-                
-                // Mostrar a tela de autenticação por token
-                tokenScreen.style.display = 'block';
-                tokenScreen.style.visibility = 'visible';
-                tokenScreen.style.opacity = '0';
-                
-                // Animar entrada da tela de token
-                setTimeout(() => {
-                    tokenScreen.style.opacity = '1';
-                    tokenScreen.style.transform = 'translateY(0)';
-                }, 50);
-            }, 300);
+        // Função para atualizar o conteúdo principal da tela
+        function updateMainContent() {
+            currentUsernameDisplay.textContent = currentUsername || 'Convidado';
+            currentUserIdDisplay.textContent = `ID: ${telegramUserId}`;
+            userBalanceDisplay.textContent = userBalance.toFixed(2);
         }
 
-        // Função para validar token no Firebase
-        async function validateToken(token) {
-            try {
-                const tokenRef = database.ref('tokens/' + token);
-                const snapshot = await tokenRef.once('value');
-                
-                if (snapshot.exists()) {
-                    const tokenData = snapshot.val();
-                    
-                    // Verificar se o token está ativo
-                    if (tokenData.active === true) {
-                        return {
-                            valid: true,
-                            data: tokenData
-                        };
+        // Simulação de SDKs de anúncios
+        const adSDKs = [
+            () => {
+                return new Promise((resolve, reject) => {
+                    console.log('Tentando SDK 1 (Monetag)');
+                    // Simula a disponibilidade do SDK da Monetag
+                    if (Math.random() > 0.3) { // 70% de chance de sucesso
+                        setTimeout(() => {
+                            console.log('Monetag SDK disponível.');
+                            resolve('Monetag');
+                        }, 500);
                     } else {
-                        return {
-                            valid: false,
-                            error: 'Token inativo ou expirado'
-                        };
+                        console.log('Monetag SDK não disponível.');
+                        reject('Monetag SDK não disponível');
                     }
-                } else {
-                    return {
-                        valid: false,
-                        error: 'Token não encontrado'
-                    };
-                }
-            } catch (error) {
-                console.error('Erro ao validar token:', error);
-                return {
-                    valid: false,
-                    error: 'Erro na validação: ' + error.message
-                };
-            }
-        }
-
-        // Função para processar autenticação por token
-        async function processTokenAuth(token) {
-            const messageDiv = document.getElementById('token-message');
-            const submitButton = document.getElementById('token-submit');
-            const saveTokenCheckbox = document.getElementById('save-token-checkbox');
-            
-            // Desabilitar botão e mostrar carregamento
-            submitButton.disabled = true;
-            submitButton.textContent = 'Validando...';
-            
-            messageDiv.innerHTML = '<div class="loading">🔄 Validando token...</div>';
-            
-            try {
-                const validation = await validateToken(token);
-                
-                if (validation.valid) {
-                    // Token válido - definir usuário atual
-                    currentUserId = telegramUserId;
-                    
-                    // Verificar se deve salvar o token (baseado no checkbox)
-                    if (saveTokenCheckbox.checked) {
-                        saveToken(token);
-                        messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Token salvo para auto-login. Redirecionando...</div>';
+                });
+            },
+            () => {
+                return new Promise((resolve, reject) => {
+                    console.log('Tentando SDK 2 (AdSense)');
+                    // Simula a disponibilidade do SDK do AdSense
+                    if (Math.random() > 0.5) { // 50% de chance de sucesso
+                        setTimeout(() => {
+                            console.log('AdSense SDK disponível.');
+                            resolve('AdSense');
+                        }, 700);
                     } else {
-                        messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Redirecionando...</div>';
+                        console.log('AdSense SDK não disponível.');
+                        reject('AdSense SDK não disponível');
                     }
-                    
-                    // Aguardar 2 segundos e mostrar o conteúdo principal
-                    setTimeout(() => {
-                        showMainContent();
-                    }, 2000);
-                } else {
-                    // Token inválido
-                    messageDiv.innerHTML = `<div class="error-message">❌ ${validation.error}</div>`;
-                    
-                    // Reabilitar botão
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Conectar Conta';
-                }
-            } catch (error) {
-                console.error('Erro no processamento:', error);
-                messageDiv.innerHTML = '<div class="error-message">❌ Erro interno. Tente novamente.</div>';
-                
-                // Reabilitar botão
-                submitButton.disabled = false;
-                submitButton.textContent = 'Conectar Conta';
-            }
-        }
-
-        // Função para mostrar o conteúdo principal (via tela de token)
-        function showMainContent() {
-            // Verificar se temos um userId válido antes de mostrar o conteúdo
-            if (!currentUserId) {
-                console.error('Tentativa de mostrar conteúdo principal sem userId válido');
-                return;
-            }
-            
-            // Atualizar informações do usuário
-            document.getElementById('current-username').textContent = currentUsername;
-            document.getElementById('current-telegram-id').textContent = currentUserId;
-            
-            // Ocultar completamente a tela de autenticação por token
-            const tokenScreen = document.getElementById('token-auth-screen');
-            const mainContent = document.getElementById('main-content');
-            
-            // Usar transição suave
-            tokenScreen.style.opacity = '0';
-            tokenScreen.style.transform = 'translateY(-30px)';
-            
-            setTimeout(() => {
-                // Remover completamente a tela de token
-                tokenScreen.style.display = 'none';
-                tokenScreen.style.visibility = 'hidden';
-                tokenScreen.style.position = 'absolute';
-                tokenScreen.style.left = '-9999px';
-                
-                // Mostrar o conteúdo principal
-                mainContent.style.display = 'block';
-                mainContent.style.visibility = 'visible';
-                mainContent.style.opacity = '0';
-                
-                // Animar entrada do conteúdo principal
-                setTimeout(() => {
-                    mainContent.style.opacity = '1';
-                    mainContent.style.transform = 'translateY(0)';
-                }, 50);
-            }, 300);
-        }
-
-        // Função para mostrar o conteúdo principal diretamente (via auto-login)
-        function showMainContentDirectly() {
-            // Verificar se temos um userId válido antes de mostrar o conteúdo
-            if (!currentUserId) {
-                console.error('Tentativa de mostrar conteúdo principal sem userId válido');
-                return;
-            }
-            
-            // Atualizar informações do usuário
-            document.getElementById('current-username').textContent = currentUsername;
-            document.getElementById('current-telegram-id').textContent = currentUserId;
-            
-            // Ocultar completamente a tela de verificação do Telegram
-            const telegramScreen = document.getElementById('telegram-check-screen');
-            const mainContent = document.getElementById('main-content');
-            
-            // Usar transição suave
-            telegramScreen.style.opacity = '0';
-            telegramScreen.style.transform = 'translateY(-30px)';
-            
-            setTimeout(() => {
-                // Remover completamente a tela de verificação
-                telegramScreen.style.display = 'none';
-                telegramScreen.style.visibility = 'hidden';
-                telegramScreen.style.position = 'absolute';
-                telegramScreen.style.left = '-9999px';
-                
-                // Mostrar o conteúdo principal
-                mainContent.style.display = 'block';
-                mainContent.style.visibility = 'visible';
-                mainContent.style.opacity = '0';
-                
-                // Animar entrada do conteúdo principal
-                setTimeout(() => {
-                    mainContent.style.opacity = '1';
-                    mainContent.style.transform = 'translateY(0)';
-                }, 50);
-            }, 300);
-        }
-
-        // Função para mostrar anúncio
-        function mostrarAnuncio() {
-            // Verificar se temos um userId válido antes de mostrar anúncio
-            if (!currentUserId) {
-                console.error('Tentativa de mostrar anúncio sem userId válido');
-                return;
-            }
-            
-            const rewardAdDiv = document.getElementById('reward-ad');
-            
-            // Mostrar mensagem de carregamento
-            rewardAdDiv.innerHTML = `
-                <span class="ad-icon">⏱️</span>
-                <div class="ad-text">Carregando anúncio...</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 100%"></div>
-                </div>
-            `;
-
-            // Tentar usar o primeiro SDK
-            if (typeof show_9474017 === 'function') {
-                show_9474017().then(() => {
-                    // Anúncio exibido com sucesso - dar recompensa imediatamente
-                    adFinished();
-                }).catch((erro) => {
-                    console.error('Erro ao exibir anúncio (SDK 1):', erro);
-                    tentarSegundoSDK();
                 });
-            } else if (typeof show_9196656 === 'function') {
-                // Tentar usar o segundo SDK
-                tentarSegundoSDK();
-            } else {
-                // Nenhum SDK disponível, simular anúncio e dar recompensa após 3 segundos
-                setTimeout(() => {
-                    adFinished();
-                }, 3000);
-            }
-        }
-
-        // Função para tentar o segundo SDK
-        function tentarSegundoSDK() {
-            if (typeof show_9196656 === 'function') {
-                show_9196656().then(() => {
-                    // Anúncio exibido com sucesso - dar recompensa imediatamente
-                    adFinished();
-                }).catch((erro) => {
-                    console.error('Erro ao exibir anúncio (SDK 2):', erro);
-                    // Simular anúncio mesmo com erro e dar recompensa após 3 segundos
-                    setTimeout(() => {
-                        adFinished();
-                    }, 3000);
+            },
+            () => {
+                return new Promise((resolve, reject) => {
+                    console.log('Tentando SDK 3 (Unity Ads)');
+                    // Simula a disponibilidade do SDK do Unity Ads
+                    if (Math.random() > 0.7) { // 30% de chance de sucesso
+                        setTimeout(() => {
+                            console.log('Unity Ads SDK disponível.');
+                            resolve('Unity Ads');
+                        }, 600);
+                    } else {
+                        console.log('Unity Ads SDK não disponível.');
+                        reject('Unity Ads SDK não disponível');
+                    }
                 });
-            } else {
-                // Simular anúncio e dar recompensa após 3 segundos
-                setTimeout(() => {
-                    adFinished();
-                }, 3000);
             }
-        }
+        ];
 
-        // Função que será chamada quando o anúncio terminar
-        async function adFinished() {
-            const rewardAdDiv = document.getElementById('reward-ad');
-            rewardAdDiv.innerHTML = '<div class="reward-message">Parabéns! Você ganhou 10 pontos!</div>';
-            
-            // Adicionar 10 pontos ao usuário no Firebase
-            if (currentUserId) {
+        async function mostrarAnuncio() {
+            watchAdButton.disabled = true;
+            adProgress.style.width = '0%';
+            hideMessage(rewardMessage);
+
+            showMessage(tokenMessage, 'Buscando anúncio...', 'loading');
+
+            let adShown = false;
+            for (const sdkAttempt of adSDKs) {
                 try {
-                    await addPointsToUser(currentUserId, 10);
+                    const sdkName = await sdkAttempt();
+                    console.log(`Anúncio exibido via ${sdkName}`);
+                    showMessage(tokenMessage, `Anúncio exibido via ${sdkName}!`, 'success');
+                    adShown = true;
+                    break; // Sai do loop se um anúncio for exibido com sucesso
                 } catch (error) {
-                    console.error('Erro ao adicionar pontos:', error);
+                    console.warn(`Falha ao carregar anúncio do SDK: ${error}`);
                 }
             }
 
-            // Mostrar botão para assistir outro anúncio após 3 segundos
-            setTimeout(() => {
-                rewardAdDiv.innerHTML = `
-                    <span class="ad-icon">📺</span>
-                    <div class="ad-text">Clique no botão para assistir outro anúncio</div>
-                    <button class="ad-button" onclick="mostrarAnuncio()">Ver Anúncio</button>
-                `;
-            }, 3000);
-        }
-
-        // Função para adicionar pontos ao usuário no Firebase
-        async function addPointsToUser(userId, points) {
-            try {
-                const timestamp = new Date().toISOString();
-                
-                // Registrar a visualização do anúncio
-                const adViewData = {
-                    userId: userId,
-                    username: currentUsername,
-                    points: points,
-                    timestamp: timestamp,
-                    userAgent: navigator.userAgent,
-                    url: window.location.href
-                };
-
-                await database.ref('ad_views').push(adViewData);
-                console.log(`Adicionados ${points} pontos ao usuário ${userId}`);
-                
-                // Atualizar balance do usuário
-                const userRef = database.ref('users/' + userId);
-                const userSnapshot = await userRef.once('value');
-                let currentBalance = 0;
-                
-                if (userSnapshot.exists() && userSnapshot.val().balance !== undefined) {
-                    currentBalance = userSnapshot.val().balance;
-                }
-                
-                const newBalance = currentBalance + points;
-                await userRef.update({ 
-                    balance: newBalance,
-                    username: currentUsername,
-                    lastActivity: timestamp
-                });
-                
-                console.log(`Novo balance do usuário ${userId}: ${newBalance}`);
-            } catch (error) {
-                console.error('Erro ao adicionar pontos ao usuário:', error);
+            if (!adShown) {
+                // Fallback para simulação se nenhum SDK funcionar
+                console.log('Nenhum SDK disponível, simulando anúncio...');
+                showMessage(tokenMessage, 'Simulando anúncio...', 'loading');
             }
+
+            // Simulação de progresso do anúncio
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                adProgress.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    showMessage(tokenMessage, 'Anúncio concluído!', 'success');
+                    setTimeout(() => {
+                        hideMessage(tokenMessage);
+                        userBalance += 0.05;
+                        updateMainContent();
+                        rewardMessage.style.display = 'block';
+                        watchAdButton.disabled = false;
+                    }, 500);
+                }
+            }, 200);
         }
 
-        // Event listener para o formulário de token
-        document.getElementById('token-form').addEventListener('submit', function(e) {
+        // Event Listeners
+        tokenForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const token = document.getElementById('token-input').value.trim();
-            
-            if (token) {
-                processTokenAuth(token);
+            const token = tokenInput.value;
+            if (telegramUserId) {
+                await authenticateUser(token, telegramUserId, currentUsername);
             } else {
-                document.getElementById('token-message').innerHTML = 
-                    '<div class="error-message">❌ Por favor, insira um token válido</div>';
+                showMessage(tokenMessage, 'Erro: ID do Telegram não disponível. Recarregue a página.', 'error');
             }
         });
 
-        // Inicializar aplicativo quando a página carregar
-        window.onload = function() {
-            // Aguardar 1 segundo e iniciar a verificação do Telegram
-            setTimeout(() => {
-                tryTelegramAuth();
-            }, 1000);
-        };
+        watchAdButton.addEventListener('click', mostrarAnuncio);
+
+        // Inicializar
+        checkTelegramUser();
     </script>
 </body>
 </html>
