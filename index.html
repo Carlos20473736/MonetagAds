@@ -601,12 +601,41 @@
         // Função para salvar token no localStorage
         function saveToken(token) {
             try {
+                console.log('🔄 Tentando salvar token no localStorage...');
+                console.log('Token:', token);
+                console.log('User ID:', telegramUserId);
+                console.log('Username:', currentUsername);
+                
+                // Verificar se localStorage está disponível
+                if (typeof(Storage) === "undefined") {
+                    console.error('❌ localStorage não está disponível neste navegador');
+                    alert('⚠️ Aviso: Seu navegador não suporta localStorage. O auto-login não funcionará.');
+                    return;
+                }
+                
                 localStorage.setItem(STORAGE_KEYS.TOKEN, token);
                 localStorage.setItem(STORAGE_KEYS.USER_ID, telegramUserId);
                 localStorage.setItem(STORAGE_KEYS.USERNAME, currentUsername);
-                console.log('Token salvo no localStorage');
+                
+                // Verificar se foi salvo corretamente
+                const savedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+                const savedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+                const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
+                
+                console.log('✅ Token salvo no localStorage');
+                console.log('Verificação - Token salvo:', savedToken);
+                console.log('Verificação - User ID salvo:', savedUserId);
+                console.log('Verificação - Username salvo:', savedUsername);
+                
+                // Mostrar mensagem visual para o usuário
+                const messageDiv = document.getElementById('token-message');
+                if (messageDiv) {
+                    messageDiv.innerHTML += '<div class="success-message" style="margin-top: 8px;">💾 Dados salvos para auto-login futuro</div>';
+                }
+                
             } catch (error) {
-                console.error('Erro ao salvar token:', error);
+                console.error('❌ Erro ao salvar token:', error);
+                alert('⚠️ Erro ao salvar dados para auto-login: ' + error.message);
             }
         }
 
