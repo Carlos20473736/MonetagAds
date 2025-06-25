@@ -97,9 +97,23 @@
         /* Estilos para a tela de verificação do Telegram */
         .telegram-check-screen {
             display: block;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        .check-title {
+        /* Estilos para a tela de autenticação por token */
+        .token-auth-screen {
+            display: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Ocultar a tela principal inicialmente */
+        .main-content {
+            display: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(30px);
+        }
+
+        .auth-title {
             font-size: 24px;
             font-weight: 600;
             color: #2d3748;
@@ -107,12 +121,211 @@
             text-align: center;
         }
 
-        .check-description {
+        .auth-description {
             color: #718096;
             font-size: 14px;
             text-align: center;
             margin-bottom: 32px;
             line-height: 1.5;
+        }
+
+        /* Estilos para formulário de token */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .form-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Estilos para a tela principal */
+        .user-info {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .user-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .user-name {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-id {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .ad-container {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            border: 2px dashed #cbd5e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ad-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .ad-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .ad-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .ad-text {
+            color: #4a5568;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        .reward-message {
+            background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+            color: #2f855a;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid #68d391;
+        }
+
+        .reward-message::before {
+            content: '🎉';
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .ad-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .ad-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Spinner de carregamento */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 32px 0;
         }
 
         .spinner {
@@ -122,113 +335,11 @@
             border-top: 4px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        /* Estilos para a tela de login */
-        .login-screen {
-            display: none;
-        }
-
-        .login-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-
-        .login-description {
-            color: #718096;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 32px;
-            line-height: 1.5;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #4a5568;
-            margin-bottom: 8px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 400;
-            color: #2d3748;
-            background: #f7fafc;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: #a0aec0;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-primary:hover::before {
-            left: 100%;
         }
 
         .message {
@@ -290,168 +401,6 @@
             color: #d69e2e;
             font-style: italic;
             font-size: 13px;
-        }
-
-        /* Ocultar a tela principal inicialmente */
-        .main-content {
-            display: none;
-        }
-
-        /* Estilos para a tela principal */
-        .user-info {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 24px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .user-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .user-name {
-            color: #667eea;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .user-id {
-            color: #718096;
-            font-size: 14px;
-        }
-
-        .logout-btn {
-            background: #e53e3e;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #c53030;
-            transform: translateY(-1px);
-        }
-
-        .main-title {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .ad-container {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            border-radius: 16px;
-            padding: 32px;
-            text-align: center;
-            border: 2px dashed #cbd5e0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ad-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.05), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .ad-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .ad-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .ad-text {
-            color: #4a5568;
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .timer {
-            color: #667eea;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            margin-top: 16px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 3px;
-            transition: width 1s ease;
-        }
-
-        .reward-message {
-            background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
-            color: #2f855a;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            text-align: center;
-            border: 1px solid #68d391;
-        }
-
-        .reward-message::before {
-            content: '🎉';
-            font-size: 24px;
-            margin-right: 8px;
-        }
-
-        .ad-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .ad-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
         /* Responsividade */
@@ -518,51 +467,68 @@
         </div>
         
         <div class="content">
-            <h2 class="check-title">Conectando...</h2>
-            <p class="check-description">
+            <h2 class="auth-title">Conectando...</h2>
+            <p class="auth-description">
                 Aguarde enquanto conectamos com seu ID do Telegram.
             </p>
             
-            <div class="spinner"></div>
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
             
-            <div id="telegram-check-message"></div>
+            <div id="telegram-message"></div>
+
+            <div class="instructions">
+                <h4>Como funciona</h4>
+                <p>• O aplicativo usa seu ID do Telegram para autenticação</p>
+                <p>• Não é necessário inserir tokens ou senhas</p>
+                <p>• A conexão é automática e segura</p>
+                <p class="note">Nota: Funciona melhor quando aberto através do Telegram</p>
+            </div>
         </div>
     </div>
 
-    <!-- Tela de Login -->
-    <div id="login-screen" class="container login-screen">
+    <!-- Tela de Autenticação por Token -->
+    <div id="token-auth-screen" class="container token-auth-screen">
         <div class="header">
             <div class="logo">Monetag Pro</div>
-            <div class="subtitle">Sistema de Recompensas Inteligente</div>
+            <div class="subtitle">Autenticação Segura</div>
         </div>
         
         <div class="content">
-            <h2 class="login-title">Insira seu Token</h2>
-            <p class="login-description">
+            <h2 class="auth-title">Insira seu Token</h2>
+            <p class="auth-description">
                 Para continuar, insira seu token de acesso válido.
             </p>
             
-            <div class="form-group">
-                <label class="form-label" for="token-input">Token de Acesso</label>
-                <input 
-                    type="text" 
-                    id="token-input" 
-                    class="form-input"
-                    placeholder="Digite seu token aqui..."
-                    maxlength="50"
-                >
-            </div>
+            <form id="token-form">
+                <div class="form-group">
+                    <label for="token-input" class="form-label">Token de Acesso</label>
+                    <input 
+                        type="text" 
+                        id="token-input" 
+                        class="form-input" 
+                        placeholder="Digite seu token aqui..."
+                        required
+                    >
+                </div>
+                
+                <div class="form-group" style="display: flex; align-items: center; margin-bottom: 24px;">
+                    <input type="checkbox" id="save-token-checkbox" style="margin-right: 10px; transform: scale(1.2);">
+                    <label for="save-token-checkbox" class="form-label" style="margin-bottom: 0;">Lembrar-me (salvar token)</label>
+                </div>
+                
+                <button type="submit" class="form-button" id="token-submit">
+                    Conectar Conta
+                </button>
+            </form>
             
-            <button id="login-btn" class="btn-primary" onclick="authenticateUser()">
-                Conectar Conta
-            </button>
-            
-            <div id="login-message"></div>
+            <div id="token-message"></div>
 
             <div class="instructions">
                 <h4>Sobre o Token</h4>
                 <p>• O token é fornecido pelo administrador do sistema</p>
-                <p>• Mantenha seu token seguro e não o compartilhe</p>
+                <p>• Mantenha seu token seguro e não compartilhe</p>
                 <p>• Em caso de problemas, entre em contato com o suporte</p>
                 <p class="note">Seu ID do Telegram: <span id="telegram-id-display">---</span></p>
             </div>
@@ -579,5 +545,595 @@
         <div class="content">
             <div class="user-info">
                 <div class="user-details">
-         
-(Content truncated due to size limit. Use line ranges to read in chunks)
+                    <div>
+                        <div class="user-name" id="current-username">Usuário Telegram</div>
+                        <div class="user-id">ID: <span id="current-telegram-id">---</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <h1 class="main-title">Centro de Recompensas</h1>
+            
+            <div class="ad-container">
+                <div class="ad-content">
+                    <div id="reward-ad">
+                        <span class="ad-icon">📺</span>
+                        <div class="ad-text">Clique no botão para assistir um anúncio</div>
+                        <button class="ad-button" onclick="mostrarAnuncio()">Ver Anúncio</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts SDK Monetag -->
+    <script src='//libtl.com/sdk.js' data-zone='9474017' data-sdk='show_9474017'></script>
+    <script src='//niphaumeenses.net/vignette.min.js' data-zone='9196656' data-sdk='show_9196656'></script>
+
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyD3ThbSkM-w5W1QCfLag8y-iqsN0bM2YdA",
+          authDomain: "injector-78dd6.firebaseapp.com",
+          projectId: "injector-78dd6",
+          storageBucket: "injector-78dd6.appspot.com",
+          databaseURL: "https://injector-78dd6-default-rtdb.firebaseio.com"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Variáveis globais para dados do usuário
+        let currentUserId = null;
+        let currentUsername = null;
+        let telegramUserId = null;
+
+        // Chaves para localStorage
+        const STORAGE_KEYS = {
+            TOKEN: 'monetag_token',
+            USER_ID: 'monetag_user_id',
+            USERNAME: 'monetag_username'
+        };
+
+        // Função para salvar token no localStorage
+        function saveToken(token) {
+            try {
+                console.log("🔄 Tentando salvar token no localStorage...");
+                console.log("Token:", token);
+                console.log("User ID:", telegramUserId);
+                console.log("Username:", currentUsername);
+                
+                // Verificar se localStorage está disponível
+                if (typeof(Storage) === "undefined") {
+                    console.error("❌ localStorage não está disponível neste navegador");
+                    alert("⚠️ Aviso: Seu navegador não suporta localStorage. O auto-login não funcionará.");
+                    return;
+                }
+                
+                localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+                localStorage.setItem(STORAGE_KEYS.USER_ID, telegramUserId);
+                localStorage.setItem(STORAGE_KEYS.USERNAME, currentUsername);
+                
+                // Verificar se foi salvo corretamente
+                const savedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+                const savedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+                const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
+                
+                console.log("✅ Token salvo no localStorage");
+                console.log("Verificação - Token salvo:", savedToken);
+                console.log("Verificação - User ID salvo:", savedUserId);
+                console.log("Verificação - Username salvo:", savedUsername);
+                
+                // Mostrar mensagem visual para o usuário
+                const messageDiv = document.getElementById("token-message");
+                if (messageDiv) {
+                    messageDiv.innerHTML += "<div class=\"success-message\" style=\"margin-top: 8px;\">💾 Dados salvos para auto-login futuro</div>";
+                }
+                
+            } catch (error) {
+                console.error("❌ Erro ao salvar token:", error);
+                alert("⚠️ Erro ao salvar dados para auto-login: " + error.message);
+            }
+        }
+
+        // Função para carregar token do localStorage
+        function loadSavedToken() {
+            try {
+                console.log("🔄 Tentando carregar token do localStorage...");
+                
+                // Verificar se localStorage está disponível
+                if (typeof(Storage) === "undefined") {
+                    console.error("❌ localStorage não está disponível neste navegador");
+                    return null;
+                }
+                
+                const savedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+                const savedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+                const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
+                
+                console.log("✅ Token carregado do localStorage:");
+                console.log("Token:", savedToken);
+                console.log("User ID:", savedUserId);
+                console.log("Username:", savedUsername);
+                
+                if (savedToken && savedUserId && savedUsername) {
+                    return {
+                        token: savedToken,
+                        userId: savedUserId,
+                        username: savedUsername
+                    };
+                }
+                return null;
+            } catch (error) {
+                console.error("❌ Erro ao carregar token:", error);
+                return null;
+            }
+        }      // Função para limpar dados salvos
+        function clearSavedData() {
+            try {
+             
+                console.log('Dados salvos removidos');
+            } catch (error) {
+                console.error('Erro ao limpar dados:', error);
+            }
+        }
+
+        // Função para tentar auto-login com token salvo
+        async function tryAutoLogin() {
+            const savedData = loadSavedToken();
+            
+            if (savedData && savedData.userId === telegramUserId) {
+                console.log('Token salvo encontrado, tentando auto-login...');
+                
+                // Verificar se o token ainda é válido
+                const validation = await validateToken(savedData.token);
+                
+                if (validation.valid) {
+                    // Token ainda válido - fazer auto-login
+                    currentUserId = savedData.userId;
+                    currentUsername = savedData.username;
+                    
+                    console.log('Auto-login bem-sucedido');
+                    
+                    // Mostrar mensagem de auto-login e ir direto para o conteúdo principal
+                    const messageDiv = document.getElementById('telegram-message');
+                    messageDiv.innerHTML = `
+                        <div class="success-message">✅ Auto-login realizado!</div>
+                        <div class="success-message" style="margin-top: 8px;">Bem-vindo de volta, ${currentUsername}!</div>
+                    `;
+                    
+                    // Aguardar 2 segundos e mostrar o conteúdo principal
+                    setTimeout(() => {
+                        showMainContentDirectly();
+                    }, 2000);
+                    
+                    return true;
+                } else {
+                    // Token expirado ou inválido - limpar dados salvos
+                    console.log('Token salvo inválido, limpando dados...');
+                    clearSavedData();
+                    return false;
+                }
+            }
+            
+            return false;
+        }
+
+        // Função para tentar autenticação via Telegram ID
+        async function tryTelegramAuth() {
+            const messageDiv = document.getElementById('telegram-message');
+            
+            try {
+                // Tentar obter dados do Telegram Web App
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+                    const initData = Telegram.WebApp.initDataUnsafe;
+                    const userId = initData.user?.id;
+                    const username = initData.user?.username || initData.user?.first_name || 'Usuário';
+                    
+                    if (userId) {
+                        // ID encontrado - definir dados do usuário
+                        telegramUserId = userId;
+                        currentUsername = username;
+                        
+                        messageDiv.innerHTML = `
+                            <div class="success-message">✅ ID do Telegram encontrado!</div>
+                            <div class="success-message" style="margin-top: 8px;">ID: ${userId}</div>
+                        `;
+                        
+                        // Tentar auto-login primeiro
+                        const autoLoginSuccess = await tryAutoLogin();
+                        
+                        if (!autoLoginSuccess) {
+                            // Auto-login falhou, mostrar tela de token
+                            setTimeout(() => {
+                                showTokenAuthScreen();
+                            }, 2000);
+                        }
+                        
+                        return;
+                    }
+                }
+                
+                // Se não conseguiu obter o ID do Telegram, mostrar erro
+                messageDiv.innerHTML = `
+                    <div class="error-message">❌ ID do Telegram não encontrado</div>
+                    <div class="instructions" style="margin-top: 16px;">
+                        <h4>Para usar este aplicativo</h4>
+                        <p>• Abra através de um bot do Telegram</p>
+                        <p>• Use um link de Telegram Web App</p>
+                        <p>• Certifique-se de que está logado no Telegram</p>
+                        <p class="note">O aplicativo requer seu ID do Telegram para funcionar</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Erro na autenticação:', error);
+                
+                messageDiv.innerHTML = `
+                    <div class="error-message">❌ Erro na conexão com o Telegram</div>
+                    <div class="instructions" style="margin-top: 16px;">
+                        <h4>Erro detectado</h4>
+                        <p>• Não foi possível conectar com o Telegram</p>
+                        <p>• Verifique se você está usando um Telegram Web App</p>
+                        <p>• Tente recarregar a página</p>
+                        <p class="note">Erro: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Função para mostrar a tela de autenticação por token
+        function showTokenAuthScreen() {
+            // Atualizar o ID do Telegram na tela de token
+            document.getElementById('telegram-id-display').textContent = telegramUserId;
+            
+            // Ocultar completamente a tela de verificação do Telegram
+            const telegramScreen = document.getElementById('telegram-check-screen');
+            const tokenScreen = document.getElementById('token-auth-screen');
+            
+            // Usar transição suave
+            telegramScreen.style.opacity = '0';
+            telegramScreen.style.transform = 'translateY(-30px)';
+            
+            setTimeout(() => {
+                // Remover completamente a tela de verificação do Telegram
+                telegramScreen.style.display = 'none';
+                telegramScreen.style.visibility = 'hidden';
+                telegramScreen.style.position = 'absolute';
+                telegramScreen.style.left = '-9999px';
+                
+                // Mostrar a tela de autenticação por token
+                tokenScreen.style.display = 'block';
+                tokenScreen.style.visibility = 'visible';
+                tokenScreen.style.opacity = '0';
+                
+                // Animar entrada da tela de token
+                setTimeout(() => {
+                    tokenScreen.style.opacity = '1';
+                    tokenScreen.style.transform = 'translateY(0)';
+                }, 50);
+            }, 300);
+        }
+
+        // Função para validar token no Firebase
+        async function validateToken(token) {
+            try {
+                const tokenRef = database.ref('tokens/' + token);
+                const snapshot = await tokenRef.once('value');
+                
+                if (snapshot.exists()) {
+                    const tokenData = snapshot.val();
+                    
+                    // Verificar se o token está ativo
+                    if (tokenData.active === true) {
+                        return {
+                            valid: true,
+                            data: tokenData
+                        };
+                    } else {
+                        return {
+                            valid: false,
+                            error: 'Token inativo ou expirado'
+                        };
+                    }
+                } else {
+                    return {
+                        valid: false,
+                        error: 'Token não encontrado'
+                    };
+                }
+            } catch (error) {
+                console.error('Erro ao validar token:', error);
+                return {
+                    valid: false,
+                    error: 'Erro na validação: ' + error.message
+                };
+            }
+        }
+
+        // Função para processar autenticação por token
+        async function processTokenAuth(token) {
+            const messageDiv = document.getElementById('token-message');
+            const submitButton = document.getElementById('token-submit');
+            const saveTokenCheckbox = document.getElementById('save-token-checkbox');
+            
+            // Desabilitar botão e mostrar carregamento
+            submitButton.disabled = true;
+            submitButton.textContent = 'Validando...';
+            
+            messageDiv.innerHTML = '<div class="loading">🔄 Validando token...</div>';
+            
+            try {
+                const validation = await validateToken(token);
+                
+                if (validation.valid) {
+                    // Token válido - definir usuário atual
+                    currentUserId = telegramUserId;
+                    
+                    // Verificar se deve salvar o token (baseado no checkbox)
+                    if (saveTokenCheckbox.checked) {
+                        saveToken(token);
+                        messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Token salvo para auto-login. Redirecionando...</div>';
+                    } else {
+                        messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Redirecionando...</div>';
+                    }
+                    
+                    // Aguardar 2 segundos e mostrar o conteúdo principal
+                    setTimeout(() => {
+                        showMainContent();
+                    }, 2000);
+                } else {
+                    // Token inválido
+                    messageDiv.innerHTML = `<div class="error-message">❌ ${validation.error}</div>`;
+                    
+                    // Reabilitar botão
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Conectar Conta';
+                }
+            } catch (error) {
+                console.error('Erro no processamento:', error);
+                messageDiv.innerHTML = '<div class="error-message">❌ Erro interno. Tente novamente.</div>';
+                
+                // Reabilitar botão
+                submitButton.disabled = false;
+                submitButton.textContent = 'Conectar Conta';
+            }
+        }
+
+        // Função para mostrar o conteúdo principal (via tela de token)
+        function showMainContent() {
+            // Verificar se temos um userId válido antes de mostrar o conteúdo
+            if (!currentUserId) {
+                console.error('Tentativa de mostrar conteúdo principal sem userId válido');
+                return;
+            }
+            
+            // Atualizar informações do usuário
+            document.getElementById('current-username').textContent = currentUsername;
+            document.getElementById('current-telegram-id').textContent = currentUserId;
+            
+            // Ocultar completamente a tela de autenticação por token
+            const tokenScreen = document.getElementById('token-auth-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            // Usar transição suave
+            tokenScreen.style.opacity = '0';
+            tokenScreen.style.transform = 'translateY(-30px)';
+            
+            setTimeout(() => {
+                // Remover completamente a tela de token
+                tokenScreen.style.display = 'none';
+                tokenScreen.style.visibility = 'hidden';
+                tokenScreen.style.position = 'absolute';
+                tokenScreen.style.left = '-9999px';
+                
+                // Mostrar o conteúdo principal
+                mainContent.style.display = 'block';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '0';
+                
+                // Animar entrada do conteúdo principal
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                    mainContent.style.transform = 'translateY(0)';
+                }, 50);
+            }, 300);
+        }
+
+        // Função para mostrar o conteúdo principal diretamente (via auto-login)
+        function showMainContentDirectly() {
+            // Verificar se temos um userId válido antes de mostrar o conteúdo
+            if (!currentUserId) {
+                console.error('Tentativa de mostrar conteúdo principal sem userId válido');
+                return;
+            }
+            
+            // Atualizar informações do usuário
+            document.getElementById('current-username').textContent = currentUsername;
+            document.getElementById('current-telegram-id').textContent = currentUserId;
+            
+            // Ocultar completamente a tela de verificação do Telegram
+            const telegramScreen = document.getElementById('telegram-check-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            // Usar transição suave
+            telegramScreen.style.opacity = '0';
+            telegramScreen.style.transform = 'translateY(-30px)';
+            
+            setTimeout(() => {
+                // Remover completamente a tela de verificação
+                telegramScreen.style.display = 'none';
+                telegramScreen.style.visibility = 'hidden';
+                telegramScreen.style.position = 'absolute';
+                telegramScreen.style.left = '-9999px';
+                
+                // Mostrar o conteúdo principal
+                mainContent.style.display = 'block';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '0';
+                
+                // Animar entrada do conteúdo principal
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                    mainContent.style.transform = 'translateY(0)';
+                }, 50);
+            }, 300);
+        }
+
+        // Função para mostrar anúncio
+        function mostrarAnuncio() {
+            // Verificar se temos um userId válido antes de mostrar anúncio
+            if (!currentUserId) {
+                console.error('Tentativa de mostrar anúncio sem userId válido');
+                return;
+            }
+            
+            const rewardAdDiv = document.getElementById('reward-ad');
+            
+            // Mostrar mensagem de carregamento
+            rewardAdDiv.innerHTML = `
+                <span class="ad-icon">⏱️</span>
+                <div class="ad-text">Carregando anúncio...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+            `;
+
+            // Tentar usar o primeiro SDK
+            if (typeof show_9474017 === 'function') {
+                show_9474017().then(() => {
+                    // Anúncio exibido com sucesso - dar recompensa imediatamente
+                    adFinished();
+                }).catch((erro) => {
+                    console.error('Erro ao exibir anúncio (SDK 1):', erro);
+                    tentarSegundoSDK();
+                });
+            } else if (typeof show_9196656 === 'function') {
+                // Tentar usar o segundo SDK
+                tentarSegundoSDK();
+            } else {
+                // Nenhum SDK disponível, simular anúncio e dar recompensa após 3 segundos
+                setTimeout(() => {
+                    adFinished();
+                }, 3000);
+            }
+        }
+
+        // Função para tentar o segundo SDK
+        function tentarSegundoSDK() {
+            if (typeof show_9196656 === 'function') {
+                show_9196656().then(() => {
+                    // Anúncio exibido com sucesso - dar recompensa imediatamente
+                    adFinished();
+                }).catch((erro) => {
+                    console.error('Erro ao exibir anúncio (SDK 2):', erro);
+                    // Simular anúncio mesmo com erro e dar recompensa após 3 segundos
+                    setTimeout(() => {
+                        adFinished();
+                    }, 3000);
+                });
+            } else {
+                // Simular anúncio e dar recompensa após 3 segundos
+                setTimeout(() => {
+                    adFinished();
+                }, 3000);
+            }
+        }
+
+        // Função que será chamada quando o anúncio terminar
+        async function adFinished() {
+            const rewardAdDiv = document.getElementById('reward-ad');
+            rewardAdDiv.innerHTML = '<div class="reward-message">Parabéns! Você ganhou 10 pontos!</div>';
+            
+            // Adicionar 10 pontos ao usuário no Firebase
+            if (currentUserId) {
+                try {
+                    await addPointsToUser(currentUserId, 10);
+                } catch (error) {
+                    console.error('Erro ao adicionar pontos:', error);
+                }
+            }
+
+            // Mostrar botão para assistir outro anúncio após 3 segundos
+            setTimeout(() => {
+                rewardAdDiv.innerHTML = `
+                    <span class="ad-icon">📺</span>
+                    <div class="ad-text">Clique no botão para assistir outro anúncio</div>
+                    <button class="ad-button" onclick="mostrarAnuncio()">Ver Anúncio</button>
+                `;
+            }, 3000);
+        }
+
+        // Função para adicionar pontos ao usuário no Firebase
+        async function addPointsToUser(userId, points) {
+            try {
+                const timestamp = new Date().toISOString();
+                
+                // Registrar a visualização do anúncio
+                const adViewData = {
+                    userId: userId,
+                    username: currentUsername,
+                    points: points,
+                    timestamp: timestamp,
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                };
+
+                await database.ref('ad_views').push(adViewData);
+                console.log(`Adicionados ${points} pontos ao usuário ${userId}`);
+                
+                // Atualizar balance do usuário
+                const userRef = database.ref('users/' + userId);
+                const userSnapshot = await userRef.once('value');
+                let currentBalance = 0;
+                
+                if (userSnapshot.exists() && userSnapshot.val().balance !== undefined) {
+                    currentBalance = userSnapshot.val().balance;
+                }
+                
+                const newBalance = currentBalance + points;
+                await userRef.update({ 
+                    balance: newBalance,
+                    username: currentUsername,
+                    lastActivity: timestamp
+                });
+                
+                console.log(`Novo balance do usuário ${userId}: ${newBalance}`);
+            } catch (error) {
+                console.error('Erro ao adicionar pontos ao usuário:', error);
+            }
+        }
+
+        // Event listener para o formulário de token
+        document.getElementById('token-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const token = document.getElementById('token-input').value.trim();
+            
+            if (token) {
+                processTokenAuth(token);
+            } else {
+                document.getElementById('token-message').innerHTML = 
+                    '<div class="error-message">❌ Por favor, insira um token válido</div>';
+            }
+        });
+
+        // Inicializar aplicativo quando a página carregar
+        window.onload = function() {
+            // Aguardar 1 segundo e iniciar a verificação do Telegram
+            setTimeout(() => {
+                tryTelegramAuth();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
+
