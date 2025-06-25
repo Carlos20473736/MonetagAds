@@ -513,6 +513,11 @@
                     >
                 </div>
                 
+                <div class="form-group" style="display: flex; align-items: center; margin-bottom: 24px;">
+                    <input type="checkbox" id="save-token-checkbox" style="margin-right: 10px; transform: scale(1.2);">
+                    <label for="save-token-checkbox" class="form-label" style="margin-bottom: 0;">Lembrar-me (salvar token)</label>
+                </div>
+                
                 <button type="submit" class="form-button" id="token-submit">
                     Conectar Conta
                 </button>
@@ -849,6 +854,7 @@
         async function processTokenAuth(token) {
             const messageDiv = document.getElementById('token-message');
             const submitButton = document.getElementById('token-submit');
+            const saveTokenCheckbox = document.getElementById('save-token-checkbox');
             
             // Desabilitar botão e mostrar carregamento
             submitButton.disabled = true;
@@ -860,11 +866,16 @@
                 const validation = await validateToken(token);
                 
                 if (validation.valid) {
-                    // Token válido - definir usuário atual e salvar token
+                    // Token válido - definir usuário atual
                     currentUserId = telegramUserId;
-                    saveToken(token);
                     
-                    messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Redirecionando...</div>';
+                    // Verificar se deve salvar o token (baseado no checkbox)
+                    if (saveTokenCheckbox.checked) {
+                        saveToken(token);
+                        messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Token salvo para auto-login. Redirecionando...</div>';
+                    } else {
+                        messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Redirecionando...</div>';
+                    }
                     
                     // Aguardar 2 segundos e mostrar o conteúdo principal
                     setTimeout(() => {
@@ -1116,3 +1127,4 @@
     </script>
 </body>
 </html>
+
