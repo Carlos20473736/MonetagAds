@@ -678,13 +678,15 @@
             }
         }      // Função para limpar dados salvos
         function clearSavedData() {
-            try {
-             
-                console.log('Dados salvos removidos');
-            } catch (error) {
-                console.error('Erro ao limpar dados:', error);
-            }
-        }
+    try {
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER_ID);
+        localStorage.removeItem(STORAGE_KEYS.USERNAME);
+        console.log('Dados salvos removidos');
+    } catch (error) {
+        console.error('Erro ao limpar dados:', error);
+    }
+}
 
         // Função para tentar auto-login com token salvo
         async function tryAutoLogin() {
