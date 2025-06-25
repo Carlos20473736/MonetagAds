@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monetag Pro - Sistema de Recompensas</title>
+    <title>Monetaggg Pro - Sistema de Recompensas</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -502,19 +502,48 @@
         // Função para verificar autenticação via Telegram Web App
         function checkTelegramAuth() {
             try {
+                // Mostrar informações de depuração na tela
+                const debugInfo = document.createElement('div');
+                debugInfo.style.cssText = 'background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all;';
+                
                 // Verificar se o Telegram Web App está disponível
-                if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+                if (typeof Telegram === 'undefined') {
+                    debugInfo.textContent = 'DEBUG: Objeto Telegram não está definido';
+                    document.querySelector('.content').appendChild(debugInfo);
+                    showMessage('Este aplicativo deve ser aberto através do Telegram.', 'error');
+                    return false;
+                }
+                
+                if (!Telegram.WebApp) {
+                    debugInfo.textContent = 'DEBUG: Telegram.WebApp não está disponível';
+                    document.querySelector('.content').appendChild(debugInfo);
                     showMessage('Este aplicativo deve ser aberto através do Telegram.', 'error');
                     return false;
                 }
 
-                // Obter dados do usuário do Telegram Web App
+                // Mostrar dados completos de depuração
                 const initData = Telegram.WebApp.initDataUnsafe;
+                debugInfo.innerHTML = `
+DEBUG - Dados do Telegram Web App:
+=================================
+Telegram.WebApp existe: ${!!Telegram.WebApp}
+initDataUnsafe: ${JSON.stringify(initData, null, 2)}
+initData (string): ${Telegram.WebApp.initData || 'vazio'}
+user objeto: ${JSON.stringify(initData.user, null, 2)}
+userId: ${initData.user?.id || 'não encontrado'}
+username: ${initData.user?.username || 'não encontrado'}
+first_name: ${initData.user?.first_name || 'não encontrado'}
+last_name: ${initData.user?.last_name || 'não encontrado'}
+=================================
+                `;
+                document.querySelector('.content').appendChild(debugInfo);
+
+                // Obter dados do usuário do Telegram Web App
                 const userId = initData.user?.id;
                 const username = initData.user?.username || initData.user?.first_name || 'Usuário';
 
                 if (!userId) {
-                    showMessage('Não foi possível obter seu ID do Telegram.', 'error');
+                    showMessage('Não foi possível obter seu ID do Telegram. Verifique os dados de depuração acima.', 'error');
                     return false;
                 }
 
@@ -531,12 +560,19 @@
                 // Aguardar um pouco e mostrar o conteúdo principal
                 setTimeout(() => {
                     showMainContent();
-                }, 1500);
+                }, 3000); // Aumentado para 3 segundos para dar tempo de ler os dados de debug
 
                 return true;
             } catch (error) {
                 console.error('Erro na autenticação do Telegram:', error);
-                showMessage('Erro ao conectar com o Telegram. Tente novamente.', 'error');
+                
+                // Mostrar erro de depuração na tela
+                const errorInfo = document.createElement('div');
+                errorInfo.style.cssText = 'background: #ffebee; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 12px; color: #c62828;';
+                errorInfo.textContent = `DEBUG - ERRO: ${error.message}\nStack: ${error.stack}`;
+                document.querySelector('.content').appendChild(errorInfo);
+                
+                showMessage('Erro ao conectar com o Telegram. Verifique os dados de depuração acima.', 'error');
                 return false;
             }
         }
