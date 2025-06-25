@@ -591,8 +591,101 @@
         let currentUsername = null;
         let telegramUserId = null;
 
+        // Chaves para localStorage
+        const STORAGE_KEYS = {
+            TOKEN: 'monetag_token',
+            USER_ID: 'monetag_user_id',
+            USERNAME: 'monetag_username'
+        };
+
+        // Função para salvar token no localStorage
+        function saveToken(token) {
+            try {
+                localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+                localStorage.setItem(STORAGE_KEYS.USER_ID, telegramUserId);
+                localStorage.setItem(STORAGE_KEYS.USERNAME, currentUsername);
+                console.log('Token salvo no localStorage');
+            } catch (error) {
+                console.error('Erro ao salvar token:', error);
+            }
+        }
+
+        // Função para carregar token do localStorage
+        function loadSavedToken() {
+            try {
+                const savedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+                const savedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+                const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
+                
+                if (savedToken && savedUserId && savedUsername) {
+                    return {
+                        token: savedToken,
+                        userId: savedUserId,
+                        username: savedUsername
+                    };
+                }
+                return null;
+            } catch (error) {
+                console.error('Erro ao carregar token:', error);
+                return null;
+            }
+        }
+
+        // Função para limpar dados salvos
+        function clearSavedData() {
+            try {
+                localStorage.removeItem(STORAGE_KEYS.TOKEN);
+                localStorage.removeItem(STORAGE_KEYS.USER_ID);
+                localStorage.removeItem(STORAGE_KEYS.USERNAME);
+                console.log('Dados salvos removidos');
+            } catch (error) {
+                console.error('Erro ao limpar dados:', error);
+            }
+        }
+
+        // Função para tentar auto-login com token salvo
+        async function tryAutoLogin() {
+            const savedData = loadSavedToken();
+            
+            if (savedData && savedData.userId === telegramUserId) {
+                console.log('Token salvo encontrado, tentando auto-login...');
+                
+                // Verificar se o token ainda é válido
+                const validation = await validateToken(savedData.token);
+                
+                if (validation.valid) {
+                    // Token ainda válido - fazer auto-login
+                    currentUserId = savedData.userId;
+                    currentUsername = savedData.username;
+                    
+                    console.log('Auto-login bem-sucedido');
+                    
+                    // Mostrar mensagem de auto-login e ir direto para o conteúdo principal
+                    const messageDiv = document.getElementById('telegram-message');
+                    messageDiv.innerHTML = `
+                        <div class="success-message">✅ Auto-login realizado!</div>
+                        <div class="success-message" style="margin-top: 8px;">Bem-vindo de volta, ${currentUsername}!</div>
+                    `;
+                    
+                    // Aguardar 2 segundos e mostrar o conteúdo principal
+                    setTimeout(() => {
+                        showMainContentDirectly();
+                    }, 2000);
+                    
+                    return true;
+                } else {
+                    // Token expirado ou inválido - limpar dados salvos
+                    console.log('Token salvo inválido, limpando dados...');
+                    clearSavedData();
+                    return false;
+                }
+            }
+            
+            return false;
+        }
+
         // Função para tentar autenticação via Telegram ID
-        function tryTelegramAuth() {
+        async function tryTelegramAuth() {
             const messageDiv = document.getElementById('telegram-message');
             
             try {
@@ -603,7 +696,7 @@
                     const username = initData.user?.username || initData.user?.first_name || 'Usuário';
                     
                     if (userId) {
-                        // ID encontrado - ir para tela de autenticação por token
+                        // ID encontrado - definir dados do usuário
                         telegramUserId = userId;
                         currentUsername = username;
                         
@@ -612,10 +705,16 @@
                             <div class="success-message" style="margin-top: 8px;">ID: ${userId}</div>
                         `;
                         
-                        // Aguardar 2 segundos e mostrar a tela de token
-                        setTimeout(() => {
-                            showTokenAuthScreen();
-                        }, 2000);
+                        // Tentar auto-login primeiro
+                        const autoLoginSuccess = await tryAutoLogin();
+                        
+                        if (!autoLoginSuccess) {
+                            // Auto-login falhou, mostrar tela de token
+                            setTimeout(() => {
+                                showTokenAuthScreen();
+                            }, 2000);
+                        }
+                        
                         return;
                     }
                 }
@@ -732,8 +831,9 @@
                 const validation = await validateToken(token);
                 
                 if (validation.valid) {
-                    // Token válido - definir usuário atual
+                    // Token válido - definir usuário atual e salvar token
                     currentUserId = telegramUserId;
+                    saveToken(token);
                     
                     messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Redirecionando...</div>';
                     
@@ -759,7 +859,7 @@
             }
         }
 
-        // Função para mostrar o conteúdo principal
+        // Função para mostrar o conteúdo principal (via tela de token)
         function showMainContent() {
             // Verificar se temos um userId válido antes de mostrar o conteúdo
             if (!currentUserId) {
@@ -785,6 +885,46 @@
                 tokenScreen.style.visibility = 'hidden';
                 tokenScreen.style.position = 'absolute';
                 tokenScreen.style.left = '-9999px';
+                
+                // Mostrar o conteúdo principal
+                mainContent.style.display = 'block';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '0';
+                
+                // Animar entrada do conteúdo principal
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                    mainContent.style.transform = 'translateY(0)';
+                }, 50);
+            }, 300);
+        }
+
+        // Função para mostrar o conteúdo principal diretamente (via auto-login)
+        function showMainContentDirectly() {
+            // Verificar se temos um userId válido antes de mostrar o conteúdo
+            if (!currentUserId) {
+                console.error('Tentativa de mostrar conteúdo principal sem userId válido');
+                return;
+            }
+            
+            // Atualizar informações do usuário
+            document.getElementById('current-username').textContent = currentUsername;
+            document.getElementById('current-telegram-id').textContent = currentUserId;
+            
+            // Ocultar completamente a tela de verificação do Telegram
+            const telegramScreen = document.getElementById('telegram-check-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            // Usar transição suave
+            telegramScreen.style.opacity = '0';
+            telegramScreen.style.transform = 'translateY(-30px)';
+            
+            setTimeout(() => {
+                // Remover completamente a tela de verificação
+                telegramScreen.style.display = 'none';
+                telegramScreen.style.visibility = 'hidden';
+                telegramScreen.style.position = 'absolute';
+                telegramScreen.style.left = '-9999px';
                 
                 // Mostrar o conteúdo principal
                 mainContent.style.display = 'block';
