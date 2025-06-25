@@ -97,6 +97,7 @@
         /* Estilos para a tela de carregamento/autenticação */
         .auth-screen {
             display: block;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .auth-title {
@@ -118,6 +119,8 @@
         /* Ocultar a tela principal inicialmente */
         .main-content {
             display: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(30px);
         }
 
         /* Estilos para a tela principal */
@@ -568,9 +571,32 @@
             document.getElementById('current-username').textContent = currentUsername;
             document.getElementById('current-telegram-id').textContent = currentUserId;
             
-            // Mostrar conteúdo principal e ocultar tela de autenticação
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
+            // Ocultar completamente a tela de autenticação
+            const authScreen = document.getElementById('auth-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            // Usar transição suave para evitar bugs visuais
+            authScreen.style.opacity = '0';
+            authScreen.style.transform = 'translateY(-30px)';
+            
+            setTimeout(() => {
+                // Remover completamente a tela de autenticação do DOM
+                authScreen.style.display = 'none';
+                authScreen.style.visibility = 'hidden';
+                authScreen.style.position = 'absolute';
+                authScreen.style.left = '-9999px';
+                
+                // Mostrar o conteúdo principal
+                mainContent.style.display = 'block';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '0';
+                
+                // Animar entrada do conteúdo principal
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                    mainContent.style.transform = 'translateY(0)';
+                }, 50);
+            }, 300);
         }
 
         // Função para mostrar anúncio
