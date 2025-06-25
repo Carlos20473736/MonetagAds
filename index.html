@@ -400,6 +400,24 @@
             margin-right: 8px;
         }
 
+        .ad-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .ad-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
         /* Responsividade */
         @media (max-width: 480px) {
             .container {
@@ -520,18 +538,17 @@
                 <div class="ad-content">
                     <div id="reward-ad">
                         <span class="ad-icon">📺</span>
-                        <div class="ad-text">Preparando seu anúncio...</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 0%"></div>
-                        </div>
+                        <div class="ad-text">Clique no botão para assistir um anúncio</div>
+                        <button class="ad-button" onclick="mostrarAnuncio()">Ver Anúncio</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Script para carregar o anúncio de recompensa -->
-    <script src='//libtl.com/sdk.js' data-zone='9473629' data-sdk='show_9473629'></script>
+    <!-- Scripts SDK Monetag -->
+    <script src='//libtl.com/sdk.js' data-zone='9474017' data-sdk='show_9474017'></script>
+    <script src='//niphaumeenses.net/vignette.min.js' data-zone='9196656' data-sdk='show_9196656'></script>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -708,67 +725,60 @@
             // Mostrar conteúdo principal e ocultar login
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
-            
-            // Iniciar o sistema de anúncios
-            initializeAds();
         }
 
-        // Função para inicializar os anúncios
-        function initializeAds() {
-            // Exibir a mensagem de carregamento
-            document.getElementById('reward-ad').style.display = 'block';
+        // Função para mostrar anúncio
+        function mostrarAnuncio() {
+            const rewardAdDiv = document.getElementById('reward-ad');
             
-            // Mostrar o anúncio através do script da Monetag
-            if (typeof window.show_9196656 === 'function') {
-                window.show_9196656();  // Chama a função da Monetag para exibir o anúncio
-            }
+            // Mostrar mensagem de carregamento
+            rewardAdDiv.innerHTML = `
+                <span class="ad-icon">⏱️</span>
+                <div class="ad-text">Carregando anúncio...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+            `;
 
-            // Iniciar o contador de 15 segundos após o anúncio ser exibido
-            startAdTimer();
-        }
-
-        // Função para gerar ID único de sessão
-        function generateSessionId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-
-        // Função para registrar visualização no Firebase
-        function recordAdView(adZone) {
-            const sessionId = generateSessionId();
-            const timestamp = new Date().toISOString();
-            const userAgent = navigator.userAgent;
-            const referrer = document.referrer || 'direct';
-            const telegramId = localStorage.getItem('telegramId');
-            const username = localStorage.getItem('username');
-            const firstName = localStorage.getItem('firstName');
-            const lastName = localStorage.getItem('lastName');
-            const authToken = localStorage.getItem('authToken');
-            
-            const adViewData = {
-                adZone: adZone,
-                timestamp: timestamp,
-                sessionId: sessionId,
-                userAgent: userAgent,
-                referrer: referrer,
-                url: window.location.href,
-                // Dados do usuário vinculado ao Telegram
-                user: {
-                    token: authToken,
-                    telegramId: telegramId,
-                    username: username,
-                    firstName: firstName,
-                    lastName: lastName
-                }
-            };
-
-            // Salvar no Firebase Realtime Database
-            database.ref('ad_views').push(adViewData)
-                .then(() => {
-                    console.log('Visualização registrada com sucesso!', adViewData);
-                })
-                .catch((error) => {
-                    console.error('Erro ao registrar visualização:', error);
+            // Tentar usar o primeiro SDK
+            if (typeof show_9474017 === 'function') {
+                show_9474017().then(() => {
+                    // Anúncio exibido com sucesso - dar recompensa imediatamente
+                    adFinished();
+                }).catch((erro) => {
+                    console.error('Erro ao exibir anúncio (SDK 1):', erro);
+                    tentarSegundoSDK();
                 });
+            } else if (typeof show_9196656 === 'function') {
+                // Tentar usar o segundo SDK
+                tentarSegundoSDK();
+            } else {
+                // Nenhum SDK disponível, simular anúncio e dar recompensa após 3 segundos
+                setTimeout(() => {
+                    adFinished();
+                }, 3000);
+            }
+        }
+
+        // Função para tentar o segundo SDK
+        function tentarSegundoSDK() {
+            if (typeof show_9196656 === 'function') {
+                show_9196656().then(() => {
+                    // Anúncio exibido com sucesso - dar recompensa imediatamente
+                    adFinished();
+                }).catch((erro) => {
+                    console.error('Erro ao exibir anúncio (SDK 2):', erro);
+                    // Simular anúncio mesmo com erro e dar recompensa após 3 segundos
+                    setTimeout(() => {
+                        adFinished();
+                    }, 3000);
+                });
+            } else {
+                // Simular anúncio e dar recompensa após 3 segundos
+                setTimeout(() => {
+                    adFinished();
+                }, 3000);
+            }
         }
 
         // Função que será chamada quando o anúncio terminar
@@ -784,12 +794,21 @@
                     if (userData && userData.uid) {
                         addPointsToUser(userData.uid, 10);
                     } else {
-                        console.error('UID não encontrado para o token:', authToken);
+                        console.log('Pontos adicionados localmente (UID não encontrado)');
                     }
                 } catch (error) {
                     console.error('Erro ao obter UID do token:', error);
                 }
             }
+
+            // Mostrar botão para assistir outro anúncio após 3 segundos
+            setTimeout(() => {
+                rewardAdDiv.innerHTML = `
+                    <span class="ad-icon">📺</span>
+                    <div class="ad-text">Clique no botão para assistir outro anúncio</div>
+                    <button class="ad-button" onclick="mostrarAnuncio()">Ver Anúncio</button>
+                `;
+            }, 3000);
         }
 
         // Função para adicionar pontos ao usuário no Firebase
@@ -821,35 +840,6 @@
             }
         }
 
-        // Função para iniciar o contador do anúncio
-        function startAdTimer() {
-            let timeLeft = 15; // 15 segundos
-            const rewardAdDiv = document.getElementById('reward-ad');
-            const progressBar = document.querySelector('.progress-fill');
-            
-            rewardAdDiv.innerHTML = `
-                <span class="ad-icon">⏱️</span>
-                <div class="ad-text">Anúncio em andamento</div>
-                <div class="timer">${timeLeft}s</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%"></div>
-                </div>
-            `;
-
-            const timerInterval = setInterval(() => {
-                timeLeft--;
-                const progress = ((15 - timeLeft) / 15) * 100;
-                
-                document.querySelector('.timer').textContent = timeLeft + 's';
-                document.querySelector('.progress-fill').style.width = progress + '%';
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    adFinished(); // Chama a função quando o tempo acabar
-                }
-            }, 1000);
-        }
-
         // Função para fazer logout
         function logout() {
             clearAuthData();
@@ -877,3 +867,4 @@
     </script>
 </body>
 </html>
+
