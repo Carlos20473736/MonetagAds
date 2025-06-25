@@ -96,13 +96,13 @@
 
         /* Estilos para a tela de verificação do Telegram */
         .telegram-check-screen {
-            display: none;
+            display: block;
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         /* Estilos para a tela de autenticação por token */
         .token-auth-screen {
-            display: block;
+            display: none;
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
@@ -727,9 +727,9 @@
             return false;
         }
 
-             // Função para tentar autenticação via Telegram ID (apenas obtém e exibe o ID)
+        // Função para tentar autenticação via Telegram ID
         async function tryTelegramAuth() {
-            const telegramIdDisplay = document.getElementById("telegram-id-display");
+            const messageDiv = document.getElementById('telegram-message');
             
             try {
                 // Tentar obter dados do Telegram Web App
@@ -742,21 +742,55 @@
                         // ID encontrado - definir dados do usuário
                         telegramUserId = userId;
                         currentUsername = username;
-                        telegramIdDisplay.textContent = userId;
-                        console.log(`ID do Telegram obtido: ${userId}`);
-                    } else {
-                        telegramIdDisplay.textContent = 'Não encontrado';
-                        console.log('ID do Telegram não encontrado no WebApp.');
+                        
+                        messageDiv.innerHTML = `
+                            <div class="success-message">✅ ID do Telegram encontrado!</div>
+                            <div class="success-message" style="margin-top: 8px;">ID: ${userId}</div>
+                        `;
+                        
+                        // Tentar auto-login primeiro
+                        const autoLoginSuccess = await tryAutoLogin();
+                        
+                        if (!autoLoginSuccess) {
+                            // Auto-login falhou, mostrar tela de token
+                            setTimeout(() => {
+                                showTokenAuthScreen();
+                            }, 2000);
+                        }
+                        
+                        return;
                     }
-                } else {
-                    telegramIdDisplay.textContent = 'Não disponível';
-                    console.log('Telegram WebApp SDK não disponível.');
                 }
+                
+                // Se não conseguiu obter o ID do Telegram, mostrar erro
+                messageDiv.innerHTML = `
+                    <div class="error-message">❌ ID do Telegram não encontrado</div>
+                    <div class="instructions" style="margin-top: 16px;">
+                        <h4>Para usar este aplicativo</h4>
+                        <p>• Abra através de um bot do Telegram</p>
+                        <p>• Use um link de Telegram Web App</p>
+                        <p>• Certifique-se de que está logado no Telegram</p>
+                        <p class="note">O aplicativo requer seu ID do Telegram para funcionar</p>
+                    </div>
+                `;
+                
             } catch (error) {
-                console.error('Erro ao obter ID do Telegram:', error);
-                telegramIdDisplay.textContent = 'Erro';
+                console.error('Erro na autenticação:', error);
+                
+                messageDiv.innerHTML = `
+                    <div class="error-message">❌ Erro na conexão com o Telegram</div>
+                    <div class="instructions" style="margin-top: 16px;">
+                        <h4>Erro detectado</h4>
+                        <p>• Não foi possível conectar com o Telegram</p>
+                        <p>• Verifique se você está usando um Telegram Web App</p>
+                        <p>• Tente recarregar a página</p>
+                        <p class="note">Erro: ${error.message}</p>
+                    </div>
+                `;
             }
-        }     // Função para mostrar a tela de autenticação por token
+        }
+
+        // Função para mostrar a tela de autenticação por token
         function showTokenAuthScreen() {
             // Atualizar o ID do Telegram na tela de token
             document.getElementById('telegram-id-display').textContent = telegramUserId;
@@ -770,13 +804,13 @@
             telegramScreen.style.transform = 'translateY(-30px)';
             
             setTimeout(() => {
-                // Remover completamente a tela de verificação
+                // Remover completamente a tela de verificação do Telegram
                 telegramScreen.style.display = 'none';
                 telegramScreen.style.visibility = 'hidden';
                 telegramScreen.style.position = 'absolute';
                 telegramScreen.style.left = '-9999px';
                 
-                // Mostrar a tela de token
+                // Mostrar a tela de autenticação por token
                 tokenScreen.style.display = 'block';
                 tokenScreen.style.visibility = 'visible';
                 tokenScreen.style.opacity = '0';
@@ -789,18 +823,40 @@
             }, 300);
         }
 
-        // Função para validar o token (simulada)
+        // Função para validar token no Firebase
         async function validateToken(token) {
-            // Simulação de chamada de API para validar o token
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    if (token === "12345") {
-                        resolve({ valid: true, message: "Token válido!" });
+            try {
+                const tokenRef = database.ref('tokens/' + token);
+                const snapshot = await tokenRef.once('value');
+                
+                if (snapshot.exists()) {
+                    const tokenData = snapshot.val();
+                    
+                    // Verificar se o token está ativo
+                    if (tokenData.active === true) {
+                        return {
+                            valid: true,
+                            data: tokenData
+                        };
                     } else {
-                        resolve({ valid: false, error: "Token inválido. Tente novamente." });
+                        return {
+                            valid: false,
+                            error: 'Token inativo ou expirado'
+                        };
                     }
-                }, 1000);
-            });
+                } else {
+                    return {
+                        valid: false,
+                        error: 'Token não encontrado'
+                    };
+                }
+            } catch (error) {
+                console.error('Erro ao validar token:', error);
+                return {
+                    valid: false,
+                    error: 'Erro na validação: ' + error.message
+                };
+            }
         }
 
         // Função para processar autenticação por token
@@ -817,48 +873,23 @@
             
             try {
                 const validation = await validateToken(token);
+                
                 if (validation.valid) {
                     // Token válido - definir usuário atual
-                    // currentUserId = telegramUserId; // Não definir aqui, será definido após a verificação do Telegram
+                    currentUserId = telegramUserId;
                     
                     // Verificar se deve salvar o token (baseado no checkbox)
                     if (saveTokenCheckbox.checked) {
                         saveToken(token);
-                        messageDiv.innerHTML = 
-                            '<div class="success-message">✅ Token válido! Token salvo para auto-login.</div>';
+                        messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Token salvo para auto-login. Redirecionando...</div>';
                     } else {
-                        messageDiv.innerHTML = 
-                            '<div class="success-message">✅ Token válido!</div>\n';
+                        messageDiv.innerHTML = '<div class="success-message">✅ Token válido! Redirecionando...</div>';
                     }
                     
-                    // Agora, verificar o ID do Telegram
-                    if (telegramUserId) {
-                        // Se o ID do Telegram já foi obtido, usar para autenticação
-                        currentUserId = telegramUserId;
-                        // Validar token com o ID do Telegram
-                        const telegramValidation = await validateTokenWithTelegramId(token, telegramUserId);
-                        if (telegramValidation.valid) {
-                            messageDiv.innerHTML += 
-                                '<div class="success-message" style="margin-top: 8px;">✅ ID do Telegram verificado! Redirecionando...</div>';
-                            setTimeout(() => {
-                                showMainContent();
-                            }, 2000);
-                        } else {
-                            messageDiv.innerHTML = 
-                                `<div class="error-message">❌ Erro na verificação do ID do Telegram: ${telegramValidation.error}</div>`;
-                            submitButton.disabled = false;
-                            submitButton.textContent = 'Conectar Conta';
-                        }
-                    } else {
-                        // Se o ID do Telegram ainda não foi obtido, aguardar ou pedir para o usuário
-                        messageDiv.innerHTML += 
-                            '<div class="loading" style="margin-top: 8px;">Aguardando ID do Telegram... Certifique-se de abrir via Telegram.</div>';
-                        // Pode-se adicionar um timeout ou um loop para aguardar o telegramUserId
-                        // Por simplicidade, vamos apenas mostrar a mensagem e esperar que tryTelegramAuth() o defina
-                        // E o usuário terá que tentar novamente ou recarregar a página se não for via Telegram
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Conectar Conta';
-                    }
+                    // Aguardar 2 segundos e mostrar o conteúdo principal
+                    setTimeout(() => {
+                        showMainContent();
+                    }, 2000);
                 } else {
                     // Token inválido
                     messageDiv.innerHTML = `<div class="error-message">❌ ${validation.error}</div>`;
@@ -1050,6 +1081,7 @@
                 const adViewData = {
                     userId: userId,
                     username: currentUsername,
+                    points: points,
                     timestamp: timestamp,
                     userAgent: navigator.userAgent,
                     url: window.location.href
@@ -1096,29 +1128,11 @@
 
         // Inicializar aplicativo quando a página carregar
         window.onload = function() {
-            // Sempre tentar autenticação por token primeiro
-            showTokenAuthScreen();
-            // Em seguida, tentar obter o ID do Telegram em segundo plano
+            // Aguardar 1 segundo e iniciar a verificação do Telegram
             setTimeout(() => {
                 tryTelegramAuth();
             }, 1000);
         };
-
-        // Função para validar token com ID do Telegram
-        async function validateTokenWithTelegramId(token, telegramId) {
-            // Implemente sua lógica de validação aqui.
-            // Por exemplo, você pode fazer uma chamada para seu backend.
-            // Por enquanto, vamos simular uma validação bem-sucedida.
-            console.log(`Validando token ${token} com ID do Telegram ${telegramId}`);
-            
-            // Simulação: Sucesso se o token não for vazio e o telegramId for um número
-            if (token && telegramId && !isNaN(telegramId)) {
-                return { valid: true, message: "Token e ID do Telegram válidos." };
-            } else {
-                return { valid: false, error: "Token ou ID do Telegram inválido." };
-            }
-        }
     </script>
 </body>
 </html>
-
