@@ -94,12 +94,12 @@
             padding: 32px;
         }
 
-        /* Estilos para a tela de login */
-        .login-screen {
+        /* Estilos para a tela de carregamento/erro */
+        .loading-screen {
             display: block;
         }
 
-        .login-title {
+        .loading-title {
             font-size: 24px;
             font-weight: 600;
             color: #2d3748;
@@ -107,7 +107,7 @@
             text-align: center;
         }
 
-        .login-description {
+        .loading-description {
             color: #718096;
             font-size: 14px;
             text-align: center;
@@ -115,84 +115,25 @@
             line-height: 1.5;
         }
 
-        .form-group {
-            margin-bottom: 24px;
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 32px 0;
         }
 
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #4a5568;
-            margin-bottom: 8px;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .form-input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 400;
-            color: #2d3748;
-            background: #f7fafc;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: #a0aec0;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-primary:hover::before {
-            left: 100%;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .message {
@@ -361,12 +302,6 @@
             margin-bottom: 8px;
         }
 
-        .timer {
-            color: #667eea;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
         .progress-bar {
             width: 100%;
             height: 6px;
@@ -474,42 +409,31 @@
     </style>
 </head>
 <body>
-    <!-- Tela de Login -->
-    <div id="login-screen" class="container login-screen">
+    <!-- Tela de Carregamento/Erro -->
+    <div id="loading-screen" class="container loading-screen">
         <div class="header">
             <div class="logo">Monetag Pro</div>
             <div class="subtitle">Sistema de Recompensas Inteligente</div>
         </div>
         
         <div class="content">
-            <h2 class="login-title">Bem-vindo de volta!</h2>
-            <p class="login-description">
-                Digite seu token de acesso para conectar sua conta do Telegram e começar a ganhar recompensas.
+            <h2 class="loading-title">Conectando ao Telegram...</h2>
+            <p class="loading-description">
+                Aguarde enquanto verificamos sua autenticação via Telegram Web App.
             </p>
             
-            <div class="form-group">
-                <label class="form-label" for="token-input">Token de Acesso</label>
-                <input 
-                    type="text" 
-                    id="token-input" 
-                    class="form-input"
-                    placeholder="Cole seu token aqui..."
-                    maxlength="50"
-                >
+            <div class="loading-spinner">
+                <div class="spinner"></div>
             </div>
             
-            <button id="login-btn" class="btn-primary" onclick="authenticateUser()">
-                Conectar Conta
-            </button>
-            
-            <div id="login-message"></div>
+            <div id="loading-message"></div>
 
             <div class="instructions">
-                <h4>Como obter seu token</h4>
-                <p>• Os tokens são gerenciados de forma segura no Firebase</p>
-                <p>• Cada token está vinculado exclusivamente à sua conta do Telegram</p>
-                <p>• Mantenha seu token em segurança e não o compartilhe</p>
-                <p class="note">Nota: Todos os tokens são validados em tempo real no servidor</p>
+                <h4>Como funciona</h4>
+                <p>• Este aplicativo usa a autenticação automática do Telegram</p>
+                <p>• Seu ID do Telegram é usado para identificação</p>
+                <p>• Não é necessário inserir tokens ou senhas</p>
+                <p class="note">Nota: Funciona apenas quando aberto através do Telegram</p>
             </div>
         </div>
     </div>
@@ -525,7 +449,7 @@
             <div class="user-info">
                 <div class="user-details">
                     <div>
-                        <div class="user-name" id="current-username">Carregando...</div>
+                        <div class="user-name" id="current-username">Usuário Telegram</div>
                         <div class="user-id">ID: <span id="current-telegram-id">---</span></div>
                     </div>
                     <button class="logout-btn" onclick="logout()">Sair</button>
@@ -550,6 +474,9 @@
     <script src='//libtl.com/sdk.js' data-zone='9474017' data-sdk='show_9474017'></script>
     <script src='//niphaumeenses.net/vignette.min.js' data-zone='9196656' data-sdk='show_9196656'></script>
 
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
@@ -568,162 +495,67 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Função para verificar se o usuário já está autenticado
-        function checkAuthentication() {
-            const authToken = localStorage.getItem('authToken');
-            const telegramId = localStorage.getItem('telegramId');
-            const username = localStorage.getItem('username');
-            
-            if (authToken && telegramId && username) {
-                // Verificar se o token ainda é válido no Firebase
-                validateTokenInFirebase(authToken)
-                    .then(isValid => {
-                        if (isValid) {
-                            // Token ainda é válido, mostrar conteúdo principal
-                            showMainContent();
-                        } else {
-                            // Token não é mais válido, limpar dados
-                            clearAuthData();
-                            showLoginScreen();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro ao verificar token:', error);
-                        // Em caso de erro, limpar dados e mostrar login
-                        clearAuthData();
-                        showLoginScreen();
-                    });
+        // Variáveis globais para dados do usuário
+        let currentUserId = null;
+        let currentUsername = null;
+
+        // Função para verificar autenticação via Telegram Web App
+        function checkTelegramAuth() {
+            try {
+                // Verificar se o Telegram Web App está disponível
+                if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+                    showMessage('Este aplicativo deve ser aberto através do Telegram.', 'error');
+                    return false;
+                }
+
+                // Obter dados do usuário do Telegram Web App
+                const initData = Telegram.WebApp.initDataUnsafe;
+                const userId = initData.user?.id;
+                const username = initData.user?.username || initData.user?.first_name || 'Usuário';
+
+                if (!userId) {
+                    showMessage('Não foi possível obter seu ID do Telegram.', 'error');
+                    return false;
+                }
+
+                // Salvar dados do usuário
+                currentUserId = userId;
+                currentUsername = username;
+
+                // Salvar no localStorage para persistência
+                localStorage.setItem('telegramUserId', userId);
+                localStorage.setItem('telegramUsername', username);
+
+                showMessage('Autenticação realizada com sucesso!', 'success');
+                
+                // Aguardar um pouco e mostrar o conteúdo principal
+                setTimeout(() => {
+                    showMainContent();
+                }, 1500);
+
                 return true;
-            }
-            return false;
-        }
-
-        // Função para validar token no Firebase
-        async function validateTokenInFirebase(token) {
-            try {
-                const snapshot = await database.ref('tokens/' + token).once('value');
-                return snapshot.exists();
             } catch (error) {
-                console.error('Erro ao consultar Firebase:', error);
+                console.error('Erro na autenticação do Telegram:', error);
+                showMessage('Erro ao conectar com o Telegram. Tente novamente.', 'error');
                 return false;
-            }
-        }
-
-        // Função para obter dados do usuário do Firebase
-        async function getUserDataFromFirebase(token) {
-            try {
-                const snapshot = await database.ref('tokens/' + token).once('value');
-                if (snapshot.exists()) {
-                    return snapshot.val();
-                }
-                return null;
-            } catch (error) {
-                console.error('Erro ao obter dados do usuário:', error);
-                return null;
-            }
-        }
-
-        // Função para limpar dados de autenticação
-        function clearAuthData() {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('telegramId');
-            localStorage.removeItem('username');
-            localStorage.removeItem('firstName');
-            localStorage.removeItem('lastName');
-        }
-
-        // Função para mostrar tela de login
-        function showLoginScreen() {
-            document.getElementById('login-screen').style.display = 'block';
-            document.getElementById('main-content').style.display = 'none';
-        }
-
-        // Função para autenticar o usuário
-        async function authenticateUser() {
-            const token = document.getElementById('token-input').value.trim();
-            const loginBtn = document.getElementById('login-btn');
-            const messageDiv = document.getElementById('login-message');
-            
-            if (!token) {
-                showMessage('Por favor, digite um token válido.', 'error');
-                return;
-            }
-
-            // Desabilitar botão e mostrar loading
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Conectando...';
-            showMessage('Verificando token no servidor...', 'loading');
-
-            try {
-                // Verificar se o token existe no Firebase
-                const userData = await getUserDataFromFirebase(token);
-                
-                if (userData) {
-                    // Token válido, salvar dados de autenticação no localStorage
-                    localStorage.setItem('authToken', token);
-                    localStorage.setItem('telegramId', userData.telegramId || 'N/A');
-                    localStorage.setItem('username', userData.username || 'Usuário');
-                    localStorage.setItem('firstName', userData.firstName || '');
-                    localStorage.setItem('lastName', userData.lastName || '');
-                    
-                    // Registrar o login no Firebase
-                    await registerLogin(token, userData);
-                    
-                    showMessage('Autenticação realizada com sucesso!', 'success');
-                    
-                    // Aguardar um pouco e mostrar o conteúdo principal
-                    setTimeout(() => {
-                        showMainContent();
-                    }, 1500);
-                } else {
-                    showMessage('Token inválido ou não encontrado no servidor.', 'error');
-                }
-            } catch (error) {
-                console.error('Erro na autenticação:', error);
-                showMessage('Erro de conexão com o servidor. Tente novamente.', 'error');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Conectar Conta';
-            }
-        }
-
-        // Função para registrar o login no Firebase
-        async function registerLogin(token, userData) {
-            try {
-                const loginData = {
-                    token: token,
-                    telegramId: userData.telegramId,
-                    username: userData.username,
-                    timestamp: new Date().toISOString(),
-                    userAgent: navigator.userAgent,
-                    ip: 'client-side' // Não é possível obter IP real do lado cliente
-                };
-                
-                await database.ref('logins').push(loginData);
-                console.log('Login registrado com sucesso');
-            } catch (error) {
-                console.error('Erro ao registrar login:', error);
             }
         }
 
         // Função para mostrar mensagens
         function showMessage(message, type) {
-            const messageDiv = document.getElementById('login-message');
+            const messageDiv = document.getElementById('loading-message');
             messageDiv.textContent = message;
             messageDiv.className = 'message ' + type + '-message';
         }
 
         // Função para mostrar o conteúdo principal
         function showMainContent() {
-            const username = localStorage.getItem('username');
-            const telegramId = localStorage.getItem('telegramId');
-            
             // Atualizar informações do usuário
-            document.getElementById('current-username').textContent = username;
-            document.getElementById('current-telegram-id').textContent = telegramId;
+            document.getElementById('current-username').textContent = currentUsername;
+            document.getElementById('current-telegram-id').textContent = currentUserId;
             
-            // Mostrar conteúdo principal e ocultar login
-            document.getElementById('login-screen').style.display = 'none';
+            // Mostrar conteúdo principal e ocultar tela de carregamento
+            document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
         }
 
@@ -786,18 +618,12 @@
             const rewardAdDiv = document.getElementById('reward-ad');
             rewardAdDiv.innerHTML = '<div class="reward-message">Parabéns! Você ganhou 10 pontos!</div>';
             
-            // Adicionar 10 pontos ao usuário
-            const authToken = localStorage.getItem('authToken');
-            if (authToken) {
+            // Adicionar 10 pontos ao usuário no Firebase
+            if (currentUserId) {
                 try {
-                    const userData = await getUserDataFromFirebase(authToken);
-                    if (userData && userData.uid) {
-                        addPointsToUser(userData.uid, 10);
-                    } else {
-                        console.log('Pontos adicionados localmente (UID não encontrado)');
-                    }
+                    await addPointsToUser(currentUserId, 10);
                 } catch (error) {
-                    console.error('Erro ao obter UID do token:', error);
+                    console.error('Erro ao adicionar pontos:', error);
                 }
             }
 
@@ -812,29 +638,40 @@
         }
 
         // Função para adicionar pontos ao usuário no Firebase
-        async function addPointsToUser(uid, points) {
+        async function addPointsToUser(userId, points) {
             try {
-                // Atualizar dailyPoints na seção ranking
-                const rankingRef = database.ref('ranking/' + uid);
-                const rankingSnapshot = await rankingRef.once('value');
-                let currentDailyPoints = 0;
-                if (rankingSnapshot.exists() && rankingSnapshot.val().dailyPoints !== undefined) {
-                    currentDailyPoints = rankingSnapshot.val().dailyPoints;
-                }
-                const newDailyPoints = currentDailyPoints + points;
-                await rankingRef.update({ dailyPoints: newDailyPoints });
-                console.log(`Adicionados ${points} pontos diários ao usuário ${uid}. Novo total diário: ${newDailyPoints}`);
+                const timestamp = new Date().toISOString();
+                
+                // Registrar a visualização do anúncio
+                const adViewData = {
+                    userId: userId,
+                    username: currentUsername,
+                    points: points,
+                    timestamp: timestamp,
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                };
 
-                // Atualizar balance na seção users
-                const usersRef = database.ref('users/' + uid);
-                const usersSnapshot = await usersRef.once('value');
+                await database.ref('ad_views').push(adViewData);
+                console.log(`Adicionados ${points} pontos ao usuário ${userId}`);
+                
+                // Atualizar balance do usuário
+                const userRef = database.ref('users/' + userId);
+                const userSnapshot = await userRef.once('value');
                 let currentBalance = 0;
-                if (usersSnapshot.exists() && usersSnapshot.val().balance !== undefined) {
-                    currentBalance = usersSnapshot.val().balance;
+                
+                if (userSnapshot.exists() && userSnapshot.val().balance !== undefined) {
+                    currentBalance = userSnapshot.val().balance;
                 }
+                
                 const newBalance = currentBalance + points;
-                await usersRef.update({ balance: newBalance });
-                console.log(`Adicionados ${points} pontos ao balance do usuário ${uid}. Novo balance: ${newBalance}`);
+                await userRef.update({ 
+                    balance: newBalance,
+                    username: currentUsername,
+                    lastActivity: timestamp
+                });
+                
+                console.log(`Novo balance do usuário ${userId}: ${newBalance}`);
             } catch (error) {
                 console.error('Erro ao adicionar pontos ao usuário:', error);
             }
@@ -842,28 +679,41 @@
 
         // Função para fazer logout
         function logout() {
-            clearAuthData();
-            showLoginScreen();
+            localStorage.removeItem('telegramUserId');
+            localStorage.removeItem('telegramUsername');
+            currentUserId = null;
+            currentUsername = null;
+            
+            // Voltar para a tela de carregamento
+            document.getElementById('loading-screen').style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+            
+            // Tentar autenticar novamente
+            setTimeout(() => {
+                checkTelegramAuth();
+            }, 1000);
         }
 
-        // Chamar a função de verificação de autenticação ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!checkAuthentication()) {
-                showLoginScreen();
+        // Inicializar aplicativo quando a página carregar
+        window.onload = function() {
+            // Verificar se há dados salvos no localStorage
+            const savedUserId = localStorage.getItem('telegramUserId');
+            const savedUsername = localStorage.getItem('telegramUsername');
+            
+            if (savedUserId && savedUsername) {
+                currentUserId = savedUserId;
+                currentUsername = savedUsername;
+                showMessage('Restaurando sessão...', 'loading');
+                setTimeout(() => {
+                    showMainContent();
+                }, 1000);
+            } else {
+                // Tentar autenticar via Telegram Web App
+                setTimeout(() => {
+                    checkTelegramAuth();
+                }, 2000);
             }
-        });
-
-        // Adicionar evento de Enter no campo de token
-        document.addEventListener('DOMContentLoaded', () => {
-            const tokenInput = document.getElementById('token-input');
-            if (tokenInput) {
-                tokenInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        authenticateUser();
-                    }
-                });
-            }
-        });
+        };
     </script>
 </body>
 </html>
