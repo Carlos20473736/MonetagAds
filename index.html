@@ -595,6 +595,8 @@
         let currentUserId = null;
         let currentUsername = null;
         let telegramUserId = null;
+        let currentToken = null;
+        let userUID = null; // UID extraído do token
 
         // Chaves para localStorage
         const STORAGE_KEYS = {
@@ -676,10 +678,14 @@
                 console.error("❌ Erro ao carregar token:", error);
                 return null;
             }
-        }      // Função para limpar dados salvos
+        }
+
+        // Função para limpar dados salvos
         function clearSavedData() {
             try {
-             
+                localStorage.removeItem(STORAGE_KEYS.TOKEN);
+                localStorage.removeItem(STORAGE_KEYS.USER_ID);
+                localStorage.removeItem(STORAGE_KEYS.USERNAME);
                 console.log('Dados salvos removidos');
             } catch (error) {
                 console.error('Erro ao limpar dados:', error);
@@ -700,8 +706,11 @@
                     // Token ainda válido - fazer auto-login
                     currentUserId = savedData.userId;
                     currentUsername = savedData.username;
+                    currentToken = savedData.token;
+                    userUID = validation.data.uid; // Extrair UID do token
                     
                     console.log('Auto-login bem-sucedido');
+                    console.log('UID extraído do token:', userUID);
                     
                     // Mostrar mensagem de auto-login e ir direto para o conteúdo principal
                     const messageDiv = document.getElementById('telegram-message');
@@ -793,7 +802,7 @@
         // Função para mostrar a tela de autenticação por token
         function showTokenAuthScreen() {
             // Atualizar o ID do Telegram na tela de token
-            document.getElementById('telegram-id-display').textContent = telegramUserId;
+            document.getElementById('telegram-id-display').textContent = telegramUserId || '---';
             
             // Ocultar completamente a tela de verificação do Telegram
             const telegramScreen = document.getElementById('telegram-check-screen');
@@ -877,6 +886,11 @@
                 if (validation.valid) {
                     // Token válido - definir usuário atual
                     currentUserId = telegramUserId;
+                    currentToken = token;
+                    userUID = validation.data.uid; // Extrair UID do token
+                    
+                    console.log('Token validado com sucesso');
+                    console.log('UID extraído do token:', userUID);
                     
                     // Verificar se deve salvar o token (baseado no checkbox)
                     if (saveTokenCheckbox.checked) {
@@ -1053,13 +1067,15 @@
             const rewardAdDiv = document.getElementById('reward-ad');
             rewardAdDiv.innerHTML = '<div class="reward-message">Parabéns! Você ganhou 10 pontos!</div>';
             
-            // Adicionar 10 pontos ao usuário no Firebase
-            if (currentUserId) {
+            // Adicionar 10 pontos ao usuário no Firebase usando UID
+            if (userUID) {
                 try {
-                    await addPointsToUser(currentUserId, 10);
+                    await addPointsToUser(userUID, 10);
                 } catch (error) {
                     console.error('Erro ao adicionar pontos:', error);
                 }
+            } else {
+                console.error('UID não disponível para adicionar pontos');
             }
 
             // Mostrar botão para assistir outro anúncio após 3 segundos
@@ -1072,26 +1088,61 @@
             }, 3000);
         }
 
-        // Função para adicionar pontos ao usuário no Firebase
-        async function addPointsToUser(userId, points) {
+        // Função para adicionar pontos ao usuário no Firebase - AJUSTADA CONFORME INSTRUÇÕES
+        async function addPointsToUser(uid, points) {
             try {
                 const timestamp = new Date().toISOString();
                 
-                // Registrar a visualização do anúncio
+                console.log(`Adicionando ${points} pontos ao UID: ${uid}`);
+                
+                // 1. Registrar a visualização do anúncio (mantém a estrutura original)
                 const adViewData = {
-                    userId: userId,
+                    userId: currentUserId,
                     username: currentUsername,
                     points: points,
                     timestamp: timestamp,
                     userAgent: navigator.userAgent,
-                    url: window.location.href
+                    url: window.location.href,
+                    uid: uid // Adicionar UID para referência
                 };
 
                 await database.ref('ad_views').push(adViewData);
-                console.log(`Adicionados ${points} pontos ao usuário ${userId}`);
+                console.log(`Visualização registrada para UID ${uid}`);
                 
-                // Atualizar balance do usuário
-                const userRef = database.ref('users/' + userId);
+                // 2. Atualizar ranking usando UID (NOVA LÓGICA CONFORME INSTRUÇÕES)
+                const rankingRef = database.ref('ranking/' + uid);
+                const rankingSnapshot = await rankingRef.once('value');
+                
+                let currentTotalPoints = 0;
+                let rankingData = {};
+                
+                if (rankingSnapshot.exists()) {
+                    rankingData = rankingSnapshot.val();
+                    currentTotalPoints = rankingData.totalPoints || 0;
+                }
+                
+                const newTotalPoints = currentTotalPoints + points;
+                
+                // Atualizar dados do ranking
+                const updatedRankingData = {
+                    ...rankingData,
+                    totalPoints: newTotalPoints,
+                    userId: currentUserId,
+                    username: currentUsername,
+                    lastActivity: timestamp,
+                    displayName: currentUsername,
+                    userEmail: rankingData.userEmail || '',
+                    position: rankingData.position || 0,
+                    positionText: rankingData.positionText || '0º',
+                    profileImageUrl: rankingData.profileImageUrl || '',
+                    dailyPoints: (rankingData.dailyPoints || 0) + points
+                };
+                
+                await rankingRef.set(updatedRankingData);
+                console.log(`Ranking atualizado para UID ${uid}: ${newTotalPoints} pontos totais`);
+                
+                // 3. Manter compatibilidade com estrutura users (opcional)
+                const userRef = database.ref('users/' + currentUserId);
                 const userSnapshot = await userRef.once('value');
                 let currentBalance = 0;
                 
@@ -1103,10 +1154,13 @@
                 await userRef.update({ 
                     balance: newBalance,
                     username: currentUsername,
-                    lastActivity: timestamp
+                    lastActivity: timestamp,
+                    uid: uid // Adicionar referência ao UID
                 });
                 
-                console.log(`Novo balance do usuário ${userId}: ${newBalance}`);
+                console.log(`Balance do usuário ${currentUserId} atualizado: ${newBalance}`);
+                console.log(`✅ Pontos adicionados com sucesso usando UID: ${uid}`);
+                
             } catch (error) {
                 console.error('Erro ao adicionar pontos ao usuário:', error);
             }
@@ -1136,35 +1190,3 @@
     </script>
 </body>
 </html>
-
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const tokenInput = document.getElementById("token-input");
-            const saveTokenCheckbox = document.getElementById("save-token-checkbox");
-            const tokenForm = document.getElementById("token-form");
-
-            // Carregar token salvo ao carregar a página
-            const savedToken = localStorage.getItem("monetag_pro_token");
-            if (savedToken) {
-                tokenInput.value = savedToken;
-                saveTokenCheckbox.checked = true; // Garante que o checkbox esteja marcado se houver token salvo
-            }
-
-            // Salvar token ao submeter o formulário
-            tokenForm.addEventListener("submit", function(event) {
-                event.preventDefault(); // Previne o envio padrão do formulário
-                if (saveTokenCheckbox.checked) {
-                    localStorage.setItem("monetag_pro_token", tokenInput.value);
-                } else {
-                    localStorage.removeItem("monetag_pro_token");
-                }
-                // Aqui você adicionaria a lógica para realmente conectar a conta com o token
-                // Por exemplo, uma chamada AJAX para um backend
-                // alert("Token " + tokenInput.value + " " + (saveTokenCheckbox.checked ? "salvo" : "não salvo") + ". Conectando...");
-            });
-        });
-    </script>
-</body>
-</html>
-
