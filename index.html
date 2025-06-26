@@ -619,7 +619,7 @@
                 }
                 
                 localStorage.setItem(STORAGE_KEYS.TOKEN, token);
-                localStorage.setItem(STORAGE_KEYS.USER_ID, telegramUserId);
+                localStorage.setItem(STORAGE_KEYS.USER_ID, currentUserId); // Alterado para usar currentUserId
                 localStorage.setItem(STORAGE_KEYS.USERNAME, currentUsername);
                 
                 // Verificar se foi salvo corretamente
@@ -679,7 +679,9 @@
         }      // Função para limpar dados salvos
         function clearSavedData() {
             try {
-             
+                localStorage.removeItem(STORAGE_KEYS.TOKEN);
+                localStorage.removeItem(STORAGE_KEYS.USER_ID);
+                localStorage.removeItem(STORAGE_KEYS.USERNAME);
                 console.log('Dados salvos removidos');
             } catch (error) {
                 console.error('Erro ao limpar dados:', error);
@@ -690,7 +692,7 @@
         async function tryAutoLogin() {
             const savedData = loadSavedToken();
             
-            if (savedData && savedData.userId === telegramUserId) {
+            if (savedData && savedData.userId === telegramUserId) { // Manteve a verificação com telegramUserId para compatibilidade inicial
                 console.log('Token salvo encontrado, tentando auto-login...');
                 
                 // Verificar se o token ainda é válido
@@ -698,7 +700,7 @@
                 
                 if (validation.valid) {
                     // Token ainda válido - fazer auto-login
-                    currentUserId = savedData.userId;
+                    currentUserId = validation.data.uid; // Usar o UID do Firebase retornado na validação
                     currentUsername = savedData.username;
                     
                     console.log('Auto-login bem-sucedido');
@@ -875,8 +877,9 @@
                 const validation = await validateToken(token);
                 
                 if (validation.valid) {
-                    // Token válido - definir usuário atual
-                    currentUserId = telegramUserId;
+                    // Token válido - definir usuário atual com o UID do Firebase
+                    currentUserId = validation.data.uid; 
+                    currentUsername = validation.data.username; // Usar o username do token
                     
                     // Verificar se deve salvar o token (baseado no checkbox)
                     if (saveTokenCheckbox.checked) {
@@ -1167,4 +1170,5 @@
     </script>
 </body>
 </html>
+
 
