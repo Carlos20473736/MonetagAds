@@ -1076,7 +1076,6 @@
         async function addPointsToUser(userId, points) {
             try {
                 const timestamp = new Date().toISOString();
-                const tokenInput = document.getElementById("token-input");
                 
                 // Registrar a visualização do anúncio
                 const adViewData = {
@@ -1089,7 +1088,7 @@
                 };
 
                 await database.ref('ad_views').push(adViewData);
-                console.log(`Adicionados ${points} pontos ao usuário ${tokenInput}`);
+                console.log(`Adicionados ${points} pontos ao usuário ${userId}`);
                 
                 // Atualizar balance do usuário
                 const userRef = database.ref('users/' + userId);
