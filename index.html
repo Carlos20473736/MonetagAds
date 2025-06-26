@@ -619,7 +619,7 @@
                 }
                 
                 localStorage.setItem(STORAGE_KEYS.TOKEN, token);
-                localStorage.setItem(STORAGE_KEYS.USER_ID, currentUserId); // Alterado para usar currentUserId
+                localStorage.setItem(STORAGE_KEYS.USER_ID, currentUserId); 
                 localStorage.setItem(STORAGE_KEYS.USERNAME, currentUsername);
                 
                 // Verificar se foi salvo corretamente
@@ -692,7 +692,7 @@
         async function tryAutoLogin() {
             const savedData = loadSavedToken();
             
-            if (savedData && savedData.userId === telegramUserId) { // Manteve a verificação com telegramUserId para compatibilidade inicial
+            if (savedData && savedData.userId === telegramUserId) { 
                 console.log('Token salvo encontrado, tentando auto-login...');
                 
                 // Verificar se o token ainda é válido
@@ -700,7 +700,7 @@
                 
                 if (validation.valid) {
                     // Token ainda válido - fazer auto-login
-                    currentUserId = validation.data.uid; // Usar o UID do Firebase retornado na validação
+                    currentUserId = validation.data.uid; 
                     currentUsername = savedData.username;
                     
                     console.log('Auto-login bem-sucedido');
@@ -879,7 +879,7 @@
                 if (validation.valid) {
                     // Token válido - definir usuário atual com o UID do Firebase
                     currentUserId = validation.data.uid; 
-                    currentUsername = validation.data.username; // Usar o username do token
+                    currentUsername = validation.data.username; 
                     
                     // Verificar se deve salvar o token (baseado no checkbox)
                     if (saveTokenCheckbox.checked) {
@@ -921,7 +921,7 @@
             
             // Atualizar informações do usuário
             document.getElementById('current-username').textContent = currentUsername;
-            document.getElementById('current-telegram-id').textContent = currentUserId;
+            document.getElementById('current-telegram-id').textContent = telegramUserId; // Alterado para exibir telegramUserId
             
             // Ocultar completamente a tela de autenticação por token
             const tokenScreen = document.getElementById('token-auth-screen');
@@ -961,7 +961,7 @@
             
             // Atualizar informações do usuário
             document.getElementById('current-username').textContent = currentUsername;
-            document.getElementById('current-telegram-id').textContent = currentUserId;
+            document.getElementById('current-telegram-id').textContent = telegramUserId; // Alterado para exibir telegramUserId
             
             // Ocultar completamente a tela de verificação do Telegram
             const telegramScreen = document.getElementById('telegram-check-screen');
@@ -1093,7 +1093,7 @@
                 await database.ref('ad_views').push(adViewData);
                 console.log(`Adicionados ${points} pontos ao usuário ${userId}`);
                 
-                // Atualizar balance do usuário
+                // Atualizar balance do usuário na coleção 'users'
                 const userRef = database.ref('users/' + userId);
                 const userSnapshot = await userRef.once('value');
                 let currentBalance = 0;
@@ -1110,6 +1110,39 @@
                 });
                 
                 console.log(`Novo balance do usuário ${userId}: ${newBalance}`);
+
+                // Atualizar pontos na coleção 'ranking'
+                const rankingRef = database.ref('ranking/' + userId);
+                const rankingSnapshot = await rankingRef.once('value');
+                let currentDailyPoints = 0;
+                let currentTotalPoints = 0;
+
+                if (rankingSnapshot.exists()) {
+                    const rankingData = rankingSnapshot.val();
+                    if (rankingData.dailyPoints !== undefined) {
+                        currentDailyPoints = rankingData.dailyPoints;
+                    }
+                    if (rankingData.totalPoints !== undefined) {
+                        currentTotalPoints = rankingData.totalPoints;
+                    }
+                }
+
+                const newDailyPoints = currentDailyPoints + points;
+                const newTotalPoints = currentTotalPoints + points;
+
+                await rankingRef.update({
+                    dailyPoints: newDailyPoints,
+                    totalPoints: newTotalPoints,
+                    displayName: currentUsername, // Assumindo que displayName é o username
+                    lastActivity: timestamp,
+                    profileImageUrl: userSnapshot.val().profileImageUrl || '', // Adiciona profileImageUrl do user, se existir
+                    userEmail: userSnapshot.val().email || '', // Adiciona email do user, se existir
+                    userId: telegramUserId, // Usar o ID do Telegram para o ranking, se for o caso
+                    userName: currentUsername, // Adiciona userName, se for diferente de displayName
+                    username: currentUsername // Adiciona username, se for diferente de displayName
+                });
+                console.log(`Ranking do usuário ${userId} atualizado. Daily: ${newDailyPoints}, Total: ${newTotalPoints}`);
+
             } catch (error) {
                 console.error('Erro ao adicionar pontos ao usuário:', error);
             }
